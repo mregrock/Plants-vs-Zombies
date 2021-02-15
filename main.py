@@ -7,6 +7,8 @@ def open_windows():
         first_window()
     if fl == "help":
         help_window()
+    if fl == "play":
+        play_window()
 
 
 def draw_cursor(coord, cursor):
@@ -26,13 +28,18 @@ def help_window():
     screen.blit(H_back, (1100, 250))
 
 
+def play_window():
+    screen.blit(play_background, (0, 0))
+
+
 def button_check_start(coord):
     global fl
     global running
     x, y = coord[0], coord[1]
     if 940 >= x >= 590 and 480 >= y >= 320:
-        pass
-        # переход к основной игре
+        fl = "play"
+        pygame.mixer.music.load('play_music.mp3')
+        pygame.mixer.music.play()
     if 1000 >= x >= 550 and 720 >= y >= 640:
         fl = "help"
     if 950 >= x >= 580 and 850 >= y >= 770:
@@ -60,10 +67,11 @@ if __name__ == '__main__':
     cursor = pygame.image.load("cursor.png")
     background = pygame.image.load("background.png")
     help_background = pygame.image.load("help_background.png")
+    play_background = pygame.image.load("game_background.png")
     Bplay = pygame.image.load("button_play.png")
     Hplay = pygame.image.load("button_help.png")
     Eplay = pygame.image.load("button_exit.png")
-    H_back = pygame.image.load(("back_help.png"))
+    H_back = pygame.image.load("back_help.png")
     fl = "start"
     pygame.mixer.music.load('music_start.mp3')
     pygame.mixer.music.play()
@@ -77,6 +85,8 @@ if __name__ == '__main__':
                     button_check_start(pygame.mouse.get_pos())
                 if fl == "help":
                     button_check_help(pygame.mouse.get_pos())
+                if fl == "play":
+                    pass
             if event.type == pygame.MOUSEMOTION:
                 open_windows()
                 if pygame.mouse.get_focused():
