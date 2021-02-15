@@ -1,6 +1,5 @@
 import pygame
 
-
 def open_windows():
     global fl
     if fl == "start":
@@ -72,6 +71,8 @@ if __name__ == '__main__':
     cursor = pygame.image.load("cursor.png")
     background = pygame.image.load("background.png")
     fl = "start"
+    pygame.mixer.music.load('music_start.mp3')
+    pygame.mixer.music.play()
     running = True
     while running:
         for event in pygame.event.get():
