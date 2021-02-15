@@ -1,4 +1,5 @@
 import pygame
+import time
 
 def open_windows():
     global fl
@@ -24,7 +25,6 @@ def first_window():
 
 
 def help_window():
-    help_background = pygame.image.load("help_background.png")
     screen.blit(help_background, (0, 0))
     H_back = pygame.image.load(("back_help.png"))
     screen.blit(H_back, (1100, 250))
@@ -57,10 +57,6 @@ def button_check_help(coord):
     screen.blit(cursor, coord)
     pygame.display.flip()
 
-    open_windows()
-    cursor = pygame.image.load("cursor.png")
-    screen.blit(cursor, coord)
-    pygame.display.flip()
 
 
 if __name__ == '__main__':
@@ -70,6 +66,7 @@ if __name__ == '__main__':
     screen = pygame.display.set_mode(size)
     cursor = pygame.image.load("cursor.png")
     background = pygame.image.load("background.png")
+    help_background = pygame.image.load("help_background.png")
     fl = "start"
     pygame.mixer.music.load('music_start.mp3')
     pygame.mixer.music.play()
@@ -83,6 +80,7 @@ if __name__ == '__main__':
                     button_check_start(pygame.mouse.get_pos())
                 if fl == "help":
                     button_check_help(pygame.mouse.get_pos())
+                time.sleep(0.2)
             if event.type == pygame.MOUSEMOTION:
                 open_windows()
                 if pygame.mouse.get_focused():
