@@ -80,7 +80,6 @@ if __name__ == '__main__':
                     button_check_start(pygame.mouse.get_pos())
                 if fl == "help":
                     button_check_help(pygame.mouse.get_pos())
-                time.sleep(0.2)
             if event.type == pygame.MOUSEMOTION:
                 open_windows()
                 if pygame.mouse.get_focused():
