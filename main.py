@@ -31,7 +31,9 @@ def help_window():
 
 
 def play_window():
+    global prev_time
     screen.blit(play_background, (0, 0))
+    draw_text()
     for i in range(8):
         screen.blit(page, (i * 152, 0))
     screen.blit(tomato, (20, 20))
@@ -45,11 +47,12 @@ def play_window():
 
 
 def button_check_start(coord):
-    global fl
+    global fl, prev_time
     global running
     x, y = coord[0], coord[1]
     if 940 >= x >= 590 and 480 >= y >= 320:
         fl = "play"
+        prev_time = time.time()
         open_windows()
         screen.blit(cursor, coord)
         pygame.display.flip()
@@ -76,8 +79,10 @@ def button_check_help(coord):
 
 def button_check_play(coord):
     global fl_cursor
+    global score
     global cursor
     global mas_flowers
+    global flag_sun_1, flag_sun_2, flag_sun_3
     x, y = coord[0], coord[1]
     if 155 >= y >= 0:
         if 155 >= x >= 1:
@@ -96,6 +101,15 @@ def button_check_play(coord):
             cursor = thorns
         elif 1156 >= x >= 1056:
             cursor = shovel
+        elif 1400 <= x <= 1415 and 50 <= y <= 65 and flag_sun_1:
+            score += 100
+            flag_sun_1 = 0
+        elif 1460 <= x <= 1475 and 80 <= y <= 95 and flag_sun_2:
+            score += 100
+            flag_sun_2 = 0
+        elif 1450 <= x <= 1465 and 30 <= y <= 45 and flag_sun_3:
+            score += 100
+            flag_sun_3 = 0
         if 1156 >= x >= 1:
             fl_cursor = "not const"
     if fl_cursor == "not const" and cursor_const != cursor:
@@ -116,8 +130,24 @@ def draw_plants():
             screen.blit(mas_flowers[i][j], (i * 155 + 20, j * 155 + 175))
 
 
-def sun_down():
+def sun_down_1():
     screen.blit(sun, (1400, 50))
+
+
+def sun_down_2():
+    screen.blit(sun, (1460, 80))
+
+
+def sun_down_3():
+    screen.blit(sun, (1450, 30))
+
+
+def draw_text():
+    global score
+    text_surface = font.render(str(score), True, (255, 255, 255))
+    text_rect = text_surface.get_rect()
+    text_rect.midtop = (1300, 935)
+    screen.blit(text_surface, text_rect)
 
 
 if __name__ == '__main__':
@@ -136,6 +166,9 @@ if __name__ == '__main__':
         for j in range(5):
             mas_flowers[i][j] = nots
     print(mas_flowers)
+    score = 100
+    font_name = pygame.font.match_font('arial')
+    font = pygame.font.Font(font_name, 50)
     background = pygame.image.load("background.png").convert()
     help_background = pygame.image.load("help_background.png").convert()
     play_background = pygame.image.load("game_background.png").convert()
@@ -163,8 +196,12 @@ if __name__ == '__main__':
     time_fl = 0
     now = datetime.datetime.now()
     then = datetime.datetime.now()
+    pygame.mixer.music.set_volume(0.5)
     volume = pygame.mixer.music.get_volume()
     prev_time = 0
+    flag_sun_1 = 0
+    flag_sun_2 = 0
+    flag_sun_3 = 0
     while running:
         for event in pygame.event.get():
             open_windows()
@@ -173,7 +210,6 @@ if __name__ == '__main__':
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if fl == "start":
-                    prev_time = time.process_time()
                     button_check_start(pygame.mouse.get_pos())
                 if fl == "help":
                     button_check_help(pygame.mouse.get_pos())
@@ -190,11 +226,22 @@ if __name__ == '__main__':
                     if volume < 1:
                         volume += 0.1
                     pygame.mixer.music.set_volume(volume)
-            if fl == "play" and time.process_time() - prev_time > 6:
-                prev_time = time.process_time()
+            if fl == "play" and time.time() - prev_time > 7:
+                prev_time = time.time()
+                if flag_sun_1 == 0:
+                    flag_sun_1 = 1
+                elif flag_sun_2 == 0:
+                    flag_sun_2 = 1
+                else:
+                    flag_sun_3 = 1
+            if flag_sun_1:
+                sun_down_1()
+            if flag_sun_2:
+                sun_down_2()
+            if flag_sun_3:
+                sun_down_3()
             draw_cursor(pygame.mouse.get_pos())
             pygame.display.flip()
             clock.tick(60)
-            pygame.display.set_caption("fps: " + str(clock.get_fps()) + " " + str(clock_time.get_time()))
-            pygame.display.update()
+            pygame.display.set_caption("fps: " + str(clock.get_fps()))
 pygame.quit()
