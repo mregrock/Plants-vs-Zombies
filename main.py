@@ -153,14 +153,15 @@ if __name__ == '__main__':
     shovel = pygame.image.load("shovel.png")
     sun = pygame.image.load("sun.png")
     fl = "start"
-    # pygame.mixer.music.load('music_start.mp3')
-    # pygame.mixer.music.play()
+    pygame.mixer.music.load('music_start.mp3')
+    pygame.mixer.music.play()
     running = True
     open_windows()
     pygame.display.flip()
     time_fl = 0
     now = datetime.datetime.now()
     then = datetime.datetime.now()
+    volume = pygame.mixer.music.get_volume()
     while running:
         for event in pygame.event.get():
             open_windows()
@@ -176,6 +177,15 @@ if __name__ == '__main__':
                     button_check_play(pygame.mouse.get_pos())
             if event.type == pygame.MOUSEMOTION:
                 draw_cursor(pygame.mouse.get_pos())
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    if volume > 0:
+                        volume -= 0.1
+                    pygame.mixer.music.set_volume(volume)
+                elif event.key == pygame.K_RIGHT:
+                    if volume < 1:
+                        volume += 0.1
+                    pygame.mixer.music.set_volume(volume)
             draw_cursor(pygame.mouse.get_pos())
             pygame.display.flip()
             clock.tick(60)
