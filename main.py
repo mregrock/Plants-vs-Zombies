@@ -102,13 +102,13 @@ def button_check_play(coord):
             cursor = thorns
         elif 1156 >= x >= 1056:
             cursor = shovel
-        elif 1395 <= x <= 1405 and flag_sun_1:
+        elif 1400 <= x <= 1415 and 50 <= y <= 65 and flag_sun_1:
             score += 100
             flag_sun_1 = 0
-        elif 1455 <= x <= 1465 and flag_sun_2:
+        elif 1460 <= x <= 1475 and 80 <= y <= 95 and flag_sun_2:
             score += 100
             flag_sun_2 = 0
-        elif 1445 <= x <= 1455 and flag_sun_3:
+        elif 1450 <= x <= 1465 and 30 <= y <= 45 and flag_sun_3:
             score += 100
             flag_sun_3 = 0
         if 1156 >= x >= 1:
@@ -167,7 +167,7 @@ if __name__ == '__main__':
         for j in range(5):
             mas_flowers[i][j] = nots
     print(mas_flowers)
-    score = 0
+    score = 100
     font_name = pygame.font.match_font('arial')
     font = pygame.font.Font(font_name, 50)
     background = pygame.image.load("background.png").convert()
@@ -227,8 +227,7 @@ if __name__ == '__main__':
                     if volume < 1:
                         volume += 0.1
                     pygame.mixer.music.set_volume(volume)
-            if fl == "play" and time.time() - prev_time > 4:
-                print(prev_time)
+            if fl == "play" and time.time() - prev_time > 7:
                 prev_time = time.time()
                 if flag_sun_1 == 0:
                     flag_sun_1 = 1
@@ -246,5 +245,4 @@ if __name__ == '__main__':
             pygame.display.flip()
             clock.tick(60)
             pygame.display.set_caption("fps: " + str(clock.get_fps()))
-            pygame.display.update()
 pygame.quit()
