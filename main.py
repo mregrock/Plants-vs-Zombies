@@ -138,7 +138,7 @@ if __name__ == '__main__':
     shovel = pygame.image.load("shovel.png")
     fl = "start"
     #pygame.mixer.music.load('music_start.mp3')
-    # pygame.mixer.music.play()
+    #pygame.mixer.music.play()
     running = True
     while running:
         open_windows()
