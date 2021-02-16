@@ -75,7 +75,7 @@ def button_check_help(coord):
         pygame.display.flip()
 
 
-def button_check_play(coord):
+def button_check_play(coord, sun1, sun2, sun3):
     global fl_cursor
     global cursor
     global mas_flowers
@@ -97,6 +97,12 @@ def button_check_play(coord):
             cursor = thorns
         elif 1156 >= x >= 1056:
             cursor = shovel
+        elif 1395 <= x <= 1405 and sun1:
+            pass
+        elif 1465 <= x <= 1475 and sun2:
+            pass
+        elif 1445 <= x <= 1455 and sun3:
+            pass
         if 1156 >= x >= 1:
             fl_cursor = "not const"
     if fl_cursor == "not const" and cursor_const != cursor:
@@ -190,7 +196,7 @@ if __name__ == '__main__':
                 if fl == "help":
                     button_check_help(pygame.mouse.get_pos())
                 if fl == "play":
-                    button_check_play(pygame.mouse.get_pos())
+                    button_check_play(pygame.mouse.get_pos(), flag_sun_1, flag_sun_2, flag_sun_3)
             if event.type == pygame.MOUSEMOTION:
                 draw_cursor(pygame.mouse.get_pos())
             elif event.type == pygame.KEYDOWN:
