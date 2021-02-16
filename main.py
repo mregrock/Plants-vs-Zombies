@@ -31,7 +31,9 @@ def help_window():
 
 
 def play_window():
+    global prev_time
     screen.blit(play_background, (0, 0))
+    draw_text()
     for i in range(8):
         screen.blit(page, (i * 152, 0))
     screen.blit(tomato, (20, 20))
@@ -45,11 +47,12 @@ def play_window():
 
 
 def button_check_start(coord):
-    global fl
+    global fl, prev_time
     global running
     x, y = coord[0], coord[1]
     if 940 >= x >= 590 and 480 >= y >= 320:
         fl = "play"
+        prev_time = time.process_time()
         open_windows()
         screen.blit(cursor, coord)
         pygame.display.flip()
@@ -75,10 +78,12 @@ def button_check_help(coord):
         pygame.display.flip()
 
 
-def button_check_play(coord, sun1, sun2, sun3):
+def button_check_play(coord):
     global fl_cursor
+    global score
     global cursor
     global mas_flowers
+    global flag_sun_1, flag_sun_2, flag_sun_3
     x, y = coord[0], coord[1]
     if 155 >= y >= 0:
         if 155 >= x >= 1:
@@ -97,12 +102,15 @@ def button_check_play(coord, sun1, sun2, sun3):
             cursor = thorns
         elif 1156 >= x >= 1056:
             cursor = shovel
-        elif 1395 <= x <= 1405 and sun1:
-            pass
-        elif 1465 <= x <= 1475 and sun2:
-            pass
-        elif 1445 <= x <= 1455 and sun3:
-            pass
+        elif 1395 <= x <= 1405 and flag_sun_1:
+            score += 100
+            flag_sun_1 = 0
+        elif 1455 <= x <= 1465 and flag_sun_2:
+            score += 100
+            flag_sun_2 = 0
+        elif 1445 <= x <= 1455 and flag_sun_3:
+            score += 100
+            flag_sun_3 = 0
         if 1156 >= x >= 1:
             fl_cursor = "not const"
     if fl_cursor == "not const" and cursor_const != cursor:
@@ -128,11 +136,19 @@ def sun_down_1():
 
 
 def sun_down_2():
-    screen.blit(sun, (1470, 80))
+    screen.blit(sun, (1460, 80))
 
 
 def sun_down_3():
     screen.blit(sun, (1450, 30))
+
+
+def draw_text():
+    global score
+    text_surface = font.render(str(score), True, (255, 255, 255))
+    text_rect = text_surface.get_rect()
+    text_rect.midtop = (1300, 935)
+    screen.blit(text_surface, text_rect)
 
 
 if __name__ == '__main__':
@@ -151,6 +167,9 @@ if __name__ == '__main__':
         for j in range(5):
             mas_flowers[i][j] = nots
     print(mas_flowers)
+    score = 0
+    font_name = pygame.font.match_font('arial')
+    font = pygame.font.Font(font_name, 50)
     background = pygame.image.load("background.png").convert()
     help_background = pygame.image.load("help_background.png").convert()
     play_background = pygame.image.load("game_background.png").convert()
@@ -178,6 +197,7 @@ if __name__ == '__main__':
     time_fl = 0
     now = datetime.datetime.now()
     then = datetime.datetime.now()
+    pygame.mixer.music.set_volume(0.5)
     volume = pygame.mixer.music.get_volume()
     prev_time = 0
     flag_sun_1 = 0
@@ -191,12 +211,11 @@ if __name__ == '__main__':
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if fl == "start":
-                    prev_time = time.process_time()
                     button_check_start(pygame.mouse.get_pos())
                 if fl == "help":
                     button_check_help(pygame.mouse.get_pos())
                 if fl == "play":
-                    button_check_play(pygame.mouse.get_pos(), flag_sun_1, flag_sun_2, flag_sun_3)
+                    button_check_play(pygame.mouse.get_pos())
             if event.type == pygame.MOUSEMOTION:
                 draw_cursor(pygame.mouse.get_pos())
             elif event.type == pygame.KEYDOWN:
@@ -208,11 +227,12 @@ if __name__ == '__main__':
                     if volume < 1:
                         volume += 0.1
                     pygame.mixer.music.set_volume(volume)
-            if fl == "play" and time.process_time() - prev_time > 6:
+            if fl == "play" and time.process_time() - prev_time > 4:
+                print(prev_time)
                 prev_time = time.process_time()
                 if flag_sun_1 == 0:
                     flag_sun_1 = 1
-                elif flag_sun2 == 0:
+                elif flag_sun_2 == 0:
                     flag_sun_2 = 1
                 else:
                     flag_sun_3 = 1
