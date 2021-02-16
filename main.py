@@ -1,6 +1,7 @@
 import pygame
 import datetime
 import random
+import time
 
 
 def open_windows():
@@ -127,6 +128,7 @@ if __name__ == '__main__':
     screen = pygame.display.set_mode(size)
     pygame.mouse.set_visible(False)
     clock = pygame.time.Clock()
+    clock_time = pygame.time.Clock()
     cursor_const = cursor = pygame.image.load("cursor.png")
     fl_cursor = "const"
     nots = pygame.image.load("not.png")
@@ -157,11 +159,13 @@ if __name__ == '__main__':
     pygame.mixer.music.play()
     running = True
     open_windows()
+    clock_time.tick(60)
     pygame.display.flip()
     time_fl = 0
     now = datetime.datetime.now()
     then = datetime.datetime.now()
     volume = pygame.mixer.music.get_volume()
+    prev_time = 0
     while running:
         for event in pygame.event.get():
             open_windows()
@@ -170,6 +174,7 @@ if __name__ == '__main__':
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if fl == "start":
+                    prev_time = time.process_time()
                     button_check_start(pygame.mouse.get_pos())
                 if fl == "help":
                     button_check_help(pygame.mouse.get_pos())
@@ -186,9 +191,11 @@ if __name__ == '__main__':
                     if volume < 1:
                         volume += 0.1
                     pygame.mixer.music.set_volume(volume)
+            if fl == "play" and time.process_time() - prev_time > 6:
+                prev_time = time.process_time()
             draw_cursor(pygame.mouse.get_pos())
             pygame.display.flip()
             clock.tick(60)
-            pygame.display.set_caption("fps: " + str(clock.get_fps()))
+            pygame.display.set_caption("fps: " + str(clock.get_fps()) + " " + str(clock_time.get_time()))
             pygame.display.update()
 pygame.quit()
