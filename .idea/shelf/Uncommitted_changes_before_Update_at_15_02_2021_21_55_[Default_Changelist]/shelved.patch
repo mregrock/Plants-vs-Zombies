@@ -1,0 +1,82 @@
+Index: main.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import pygame\r\nimport time\r\n\r\ndef open_windows():\r\n    global fl\r\n    if fl == \"start\":\r\n        first_window()\r\n    if fl == \"help\":\r\n        help_window()\r\n\r\n\r\ndef draw_cursor(coord, cursor):\r\n    pygame.mouse.set_visible(False)\r\n    screen.blit(cursor, coord)\r\n\r\n\r\ndef first_window():\r\n    screen.blit(background, (0, 0))\r\n    Bplay = pygame.image.load(\"button_play.png\")\r\n    Hplay = pygame.image.load(\"button_help.png\")\r\n    Eplay = pygame.image.load(\"button_exit.png\")\r\n    screen.blit(Bplay, (590, 320))\r\n    screen.blit(Hplay, (550, 640))\r\n    screen.blit(Eplay, (580, 770))\r\n\r\n\r\ndef help_window():\r\n    screen.blit(help_background, (0, 0))\r\n    H_back = pygame.image.load((\"back_help.png\"))\r\n    screen.blit(H_back, (1100, 250))\r\n\r\n\r\ndef button_check_start(coord):\r\n    global fl\r\n    global running\r\n    x, y = coord[0], coord[1]\r\n    if 940 >= x >= 590 and 480 >= y >= 320:\r\n        pass\r\n        #переход к основной игре\r\n    if 1000 >= x >= 550 and 720 >= y >= 640:\r\n        fl = \"help\"\r\n    if 950 >= x >= 580 and 850 >= y >= 770:\r\n        running = False\r\n    open_windows()\r\n    cursor = pygame.image.load(\"cursor.png\")\r\n    screen.blit(cursor, coord)\r\n    pygame.display.flip()\r\n\r\n\r\ndef button_check_help(coord):\r\n    global fl\r\n    x, y = coord[0], coord[1]\r\n    if 1400 >= x >= 1100 and 700 >= y >= 250:\r\n        fl = \"start\"\r\n    open_windows()\r\n    cursor = pygame.image.load(\"cursor.png\")\r\n    screen.blit(cursor, coord)\r\n    pygame.display.flip()\r\n\r\n\r\n\r\nif __name__ == '__main__':\r\n    pygame.init()\r\n    pygame.display.set_caption(\"Plants vs monsters\")\r\n    size = width, height = 1500, 1000\r\n    screen = pygame.display.set_mode(size)\r\n    cursor = pygame.image.load(\"cursor.png\")\r\n    background = pygame.image.load(\"background.png\")\r\n    help_background = pygame.image.load(\"help_background.png\")\r\n    fl = \"start\"\r\n    pygame.mixer.music.load('music_start.mp3')\r\n    pygame.mixer.music.play()\r\n    running = True\r\n    while running:\r\n        for event in pygame.event.get():\r\n            if event.type == pygame.QUIT:\r\n                running = False\r\n            if event.type == pygame.MOUSEBUTTONDOWN:\r\n                if fl == \"start\":\r\n                    button_check_start(pygame.mouse.get_pos())\r\n                if fl == \"help\":\r\n                    button_check_help(pygame.mouse.get_pos())\r\n                time.sleep(0.2)\r\n            if event.type == pygame.MOUSEMOTION:\r\n                open_windows()\r\n                if pygame.mouse.get_focused():\r\n                    draw_cursor(pygame.mouse.get_pos(), cursor)\r\n                else:\r\n                    pass\r\n                pygame.display.flip()\r\n    pygame.quit()\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/main.py b/main.py
+--- a/main.py	(revision 41ac3d6df8220c3607d61b4a1d0a52a27afeac21)
++++ b/main.py	(date 1613415330944)
+@@ -1,5 +1,5 @@
+ import pygame
+-import time
++
+ 
+ def open_windows():
+     global fl
+@@ -16,9 +16,6 @@
+ 
+ def first_window():
+     screen.blit(background, (0, 0))
+-    Bplay = pygame.image.load("button_play.png")
+-    Hplay = pygame.image.load("button_help.png")
+-    Eplay = pygame.image.load("button_exit.png")
+     screen.blit(Bplay, (590, 320))
+     screen.blit(Hplay, (550, 640))
+     screen.blit(Eplay, (580, 770))
+@@ -26,7 +23,6 @@
+ 
+ def help_window():
+     screen.blit(help_background, (0, 0))
+-    H_back = pygame.image.load(("back_help.png"))
+     screen.blit(H_back, (1100, 250))
+ 
+ 
+@@ -36,13 +32,12 @@
+     x, y = coord[0], coord[1]
+     if 940 >= x >= 590 and 480 >= y >= 320:
+         pass
+-        #переход к основной игре
++        # переход к основной игре
+     if 1000 >= x >= 550 and 720 >= y >= 640:
+         fl = "help"
+     if 950 >= x >= 580 and 850 >= y >= 770:
+         running = False
+     open_windows()
+-    cursor = pygame.image.load("cursor.png")
+     screen.blit(cursor, coord)
+     pygame.display.flip()
+ 
+@@ -53,12 +48,10 @@
+     if 1400 >= x >= 1100 and 700 >= y >= 250:
+         fl = "start"
+     open_windows()
+-    cursor = pygame.image.load("cursor.png")
+     screen.blit(cursor, coord)
+     pygame.display.flip()
+ 
+ 
+-
+ if __name__ == '__main__':
+     pygame.init()
+     pygame.display.set_caption("Plants vs monsters")
+@@ -67,6 +60,10 @@
+     cursor = pygame.image.load("cursor.png")
+     background = pygame.image.load("background.png")
+     help_background = pygame.image.load("help_background.png")
++    Bplay = pygame.image.load("button_play.png")
++    Hplay = pygame.image.load("button_help.png")
++    Eplay = pygame.image.load("button_exit.png")
++    H_back = pygame.image.load(("back_help.png"))
+     fl = "start"
+     pygame.mixer.music.load('music_start.mp3')
+     pygame.mixer.music.play()
+@@ -80,7 +77,6 @@
+                     button_check_start(pygame.mouse.get_pos())
+                 if fl == "help":
+                     button_check_help(pygame.mouse.get_pos())
+-                time.sleep(0.2)
+             if event.type == pygame.MOUSEMOTION:
+                 open_windows()
+                 if pygame.mouse.get_focused():
