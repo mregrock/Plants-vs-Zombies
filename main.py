@@ -117,8 +117,16 @@ def draw_plants():
             screen.blit(mas_flowers[i][j], (i * 155 + 20, j * 155 + 175))
 
 
-def sun_down():
+def sun_down_1():
     screen.blit(sun, (1400, 50))
+
+
+def sun_down_2():
+    screen.blit(sun, (1470, 80))
+
+
+def sun_down_3():
+    screen.blit(sun, (1450, 30))
 
 
 if __name__ == '__main__':
@@ -166,6 +174,9 @@ if __name__ == '__main__':
     then = datetime.datetime.now()
     volume = pygame.mixer.music.get_volume()
     prev_time = 0
+    flag_sun_1 = 0
+    flag_sun_2 = 0
+    flag_sun_3 = 0
     while running:
         for event in pygame.event.get():
             open_windows()
@@ -193,9 +204,21 @@ if __name__ == '__main__':
                     pygame.mixer.music.set_volume(volume)
             if fl == "play" and time.process_time() - prev_time > 6:
                 prev_time = time.process_time()
+                if flag_sun_1 == 0:
+                    flag_sun_1 = 1
+                elif flag_sun2 == 0:
+                    flag_sun_2 = 1
+                else:
+                    flag_sun_3 = 1
+            if flag_sun_1:
+                sun_down_1()
+            if flag_sun_2:
+                sun_down_2()
+            if flag_sun_3:
+                sun_down_3()
             draw_cursor(pygame.mouse.get_pos())
             pygame.display.flip()
             clock.tick(60)
-            pygame.display.set_caption("fps: " + str(clock.get_fps()) + " " + str(clock_time.get_time()))
+            pygame.display.set_caption("fps: " + str(clock.get_fps()))
             pygame.display.update()
 pygame.quit()
