@@ -69,6 +69,7 @@ def button_check_help(coord):
     if 1400 >= x >= 1100 and 700 >= y >= 250:
         fl = "start"
         open_windows()
+
         screen.blit(cursor, coord)
         pygame.display.flip()
 
