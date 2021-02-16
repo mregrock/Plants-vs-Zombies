@@ -50,8 +50,8 @@ def button_check_start(coord):
         open_windows()
         screen.blit(cursor, coord)
         pygame.display.flip()
-        pygame.mixer.music.load('play_music.mp3')
-        pygame.mixer.music.play()
+        # pygame.mixer.music.load('play_music.mp3')
+        # pygame.mixer.music.play()
     if 1000 >= x >= 550 and 720 >= y >= 640:
         fl = "help"
         open_windows()
@@ -94,6 +94,14 @@ def button_check_play(coord):
             cursor = shovel
         if 1156 >= x >= 1:
             fl_cursor = "not const"
+    if fl_cursor == "not const":
+        if 930 >= y >= 155 and 1550 >= x >= 1:
+            x = x // 155 * 155
+            y = (y - 155) // 155 * 155
+        if x % 155 == 0 and y % 155 == 0:
+            #"""""""""""""""""""mas_flowers[x][y] = cursor
+            cursor = cursor_const
+    print(x, y)
 
 
 if __name__ == '__main__':
@@ -103,8 +111,15 @@ if __name__ == '__main__':
     screen = pygame.display.set_mode(size)
     pygame.mouse.set_visible(False)
     clock = pygame.time.Clock()
-    cursor = pygame.image.load("cursor.png")
+    cursor_const = cursor = pygame.image.load("cursor.png")
     fl_cursor = "const"
+    nots = pygame.image.load("not.png")
+    mas_flowers = []
+    for i in range(9):
+        mas_flowers.append([])
+        for j in range(5):
+            mas_flowers[i].append(nots)
+    print(mas_flowers)
     background = pygame.image.load("background.png").convert()
     help_background = pygame.image.load("help_background.png").convert()
     play_background = pygame.image.load("game_background.png").convert()
@@ -122,8 +137,8 @@ if __name__ == '__main__':
     thorns = pygame.image.load("thorns.png")
     shovel = pygame.image.load("shovel.png")
     fl = "start"
-    pygame.mixer.music.load('music_start.mp3')
-    pygame.mixer.music.play()
+    # pygame.mixer.music.load('music_start.mp3')
+    # pygame.mixer.music.play()
     running = True
     while running:
         open_windows()
