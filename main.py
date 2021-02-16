@@ -52,7 +52,7 @@ def button_check_start(coord):
     x, y = coord[0], coord[1]
     if 940 >= x >= 590 and 480 >= y >= 320:
         fl = "play"
-        prev_time = time.process_time()
+        prev_time = time.time()
         open_windows()
         screen.blit(cursor, coord)
         pygame.display.flip()
@@ -227,9 +227,9 @@ if __name__ == '__main__':
                     if volume < 1:
                         volume += 0.1
                     pygame.mixer.music.set_volume(volume)
-            if fl == "play" and time.process_time() - prev_time > 4:
+            if fl == "play" and time.time() - prev_time > 4:
                 print(prev_time)
-                prev_time = time.process_time()
+                prev_time = time.time()
                 if flag_sun_1 == 0:
                     flag_sun_1 = 1
                 elif flag_sun_2 == 0:
