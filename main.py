@@ -137,7 +137,7 @@ if __name__ == '__main__':
     thorns = pygame.image.load("thorns.png")
     shovel = pygame.image.load("shovel.png")
     fl = "start"
-    #pygame.mixer.music.load('music_start.mp3')
+    # pygame.mixer.music.load('music_start.mp3')
     #pygame.mixer.music.play()
     running = True
     while running:
