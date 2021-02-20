@@ -77,39 +77,49 @@ def button_check_help(coord):
         pygame.display.flip()
 
 
+def check_score(price):
+    global score
+    if score >= price:
+        return True
+    return False
+
+
 def button_check_play(coord):
-    global fl_cursor
+    global fl_cursor, prev_time
     global score
     global cursor
     global mas_flowers
     global flag_sun_1, flag_sun_2, flag_sun_3
     x, y = coord[0], coord[1]
     if 155 >= y >= 0:
-        if 155 >= x >= 1:
+        if 155 >= x >= 1 and check_score(50):
             cursor = tomato
-        elif 256 >= x >= 156:
+        elif 256 >= x >= 156 and check_score(50):
             cursor = sunflower
-        elif 406 >= x >= 306:
+        elif 406 >= x >= 306 and check_score(100):
             cursor = pee
-        elif 556 >= x >= 456:
+        elif 556 >= x >= 456 and check_score(50):
             cursor = nut
-        elif 706 >= x >= 606:
+        elif 706 >= x >= 606 and check_score(200):
             cursor = double_pee
-        elif 856 >= x >= 756:
+        elif 856 >= x >= 756 and check_score(150):
             cursor = cherry
-        elif 1006 >= x >= 906:
+        elif 1006 >= x >= 906 and check_score(50):
             cursor = thorns
         elif 1156 >= x >= 1056:
             cursor = shovel
         elif 1400 <= x <= 1415 and 50 <= y <= 65 and flag_sun_1:
             score += 100
             flag_sun_1 = 0
+            prev_time = time.time()
         elif 1460 <= x <= 1475 and 80 <= y <= 95 and flag_sun_2:
             score += 100
             flag_sun_2 = 0
+            prev_time = time.time()
         elif 1450 <= x <= 1465 and 30 <= y <= 45 and flag_sun_3:
             score += 100
             flag_sun_3 = 0
+            prev_time = time.time()
         if 1156 >= x >= 1:
             fl_cursor = "not const"
     if fl_cursor == "not const" and cursor_const != cursor:
@@ -117,6 +127,20 @@ def button_check_play(coord):
             x = x // 155
             y = (y - 155) // 155
             if mas_flowers[x][y] == nots and cursor != shovel:
+                if cursor == tomato:
+                    score -= 50
+                elif cursor == sunflower:
+                    score -= 50
+                elif cursor == pee:
+                    score -= 100
+                elif cursor == nut:
+                    score -= 50
+                elif cursor == double_pee:
+                    score -= 200
+                elif cursor == cherry:
+                    score -= 150
+                elif cursor == thorns:
+                    score -= 75
                 mas_flowers[x][y] = cursor
             elif cursor == shovel:
                 mas_flowers[x][y] = nots
@@ -166,7 +190,7 @@ if __name__ == '__main__':
         for j in range(5):
             mas_flowers[i][j] = nots
     print(mas_flowers)
-    score = 100
+    score = 0
     font_name = pygame.font.match_font('arial')
     font = pygame.font.Font(font_name, 50)
     background = pygame.image.load("background.png").convert()
@@ -226,7 +250,7 @@ if __name__ == '__main__':
                     if volume < 1:
                         volume += 0.1
                     pygame.mixer.music.set_volume(volume)
-            if fl == "play" and time.time() - prev_time > 7:
+            if fl == "play" and time.time() - prev_time > 10:
                 prev_time = time.time()
                 if flag_sun_1 == 0:
                     flag_sun_1 = 1
