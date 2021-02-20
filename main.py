@@ -44,6 +44,7 @@ def play_window():
     screen.blit(cherry, (780, 20))
     screen.blit(thorns, (930, 20))
     screen.blit(shovel, (1080, 20))
+    plants_action()
 
 
 def button_check_start(coord):
@@ -87,11 +88,20 @@ def check_score(price):
 def button_check_play(coord):
     global fl_cursor, prev_time
     global score
+    global cost
     global cursor
     global mas_flowers
     global flag_sun_1, flag_sun_2, flag_sun_3
     x, y = coord[0], coord[1]
-    if 155 >= y >= 0:
+    if y > 155:
+        for i in range(5):
+            for j in range(9):
+                if square_centres[i][j][0] + 15 >= x >= square_centres[i][j][0] \
+                        and square_centres[i][j][1] + 15 >= y >= square_centres[i][j][1] and flag_sunflowers[i][j] == 1:
+                    flag_sunflowers[i][j] = 0
+                    score += 100
+
+    elif 155 >= y >= 0:
         if 155 >= x >= 1 and check_score(50):
             cursor = tomato
         elif 256 >= x >= 156 and check_score(50):
@@ -127,20 +137,7 @@ def button_check_play(coord):
             x = x // 155
             y = (y - 155) // 155
             if mas_flowers[x][y] == nots and cursor != shovel:
-                if cursor == tomato:
-                    score -= 50
-                elif cursor == sunflower:
-                    score -= 50
-                elif cursor == pee:
-                    score -= 100
-                elif cursor == nut:
-                    score -= 50
-                elif cursor == double_pee:
-                    score -= 200
-                elif cursor == cherry:
-                    score -= 150
-                elif cursor == thorns:
-                    score -= 75
+                score -= cost[cursor]
                 mas_flowers[x][y] = cursor
             elif cursor == shovel:
                 mas_flowers[x][y] = nots
@@ -164,6 +161,21 @@ def sun_down_2():
 
 def sun_down_3():
     screen.blit(sun, (1450, 30))
+
+
+def plants_action():
+    global sunflower_times
+    global flag_sunflowers
+    flag_sunflower = 0
+    square_centre = (0, 0)
+    for x in range(5):
+        for y in range(9):
+            if mas_flowers[x][y] == sunflower:
+                if time.time() - sunflower_times[x][y] > 12:
+                    sunflower_times[x][y] = time.time()
+                    square_centre = (x * 155, y * 155 + 155)
+                    flag_sunflowers[x][y] = 1
+                    screen.blit(sun, square_centre)
 
 
 def draw_text():
@@ -218,6 +230,10 @@ if __name__ == '__main__':
     clock_time.tick(60)
     pygame.display.flip()
     time_fl = 0
+    cost = {pee: 100, nut: 50, cherry: 150, tomato: 50, thorns: 50, double_pee: 200, sunflower: 50}
+    sunflower_times = [[1000000000 for _ in range(9)] for _ in range(5)]
+    flag_sunflowers = [[0 for _ in range(9)] for _ in range(5)]
+    square_centres = [[(x * 155, y * 155 + 155) for y in range(9)] for x in range(5)]
     now = datetime.datetime.now()
     then = datetime.datetime.now()
     pygame.mixer.music.set_volume(0.5)
@@ -264,6 +280,10 @@ if __name__ == '__main__':
                 sun_down_2()
             if flag_sun_3:
                 sun_down_3()
+            for x in range(5):
+                for y in range(9):
+                    if flag_sunflowers[x][y] == 1:
+                        screen.blit(sun, square_centres[x][y])
             draw_cursor(pygame.mouse.get_pos())
             pygame.display.flip()
             clock.tick(60)
