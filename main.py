@@ -99,7 +99,7 @@ def button_check_play(coord):
                 if square_centres[i][j][0] + 15 >= x >= square_centres[i][j][0] \
                         and square_centres[i][j][1] + 15 >= y >= square_centres[i][j][1] and flag_sunflowers[i][j] == 1:
                     flag_sunflowers[i][j] = 0
-                    score += 100
+                    score += 50
 
     elif 155 >= y >= 0:
         if 155 >= x >= 1 and check_score(50):
@@ -139,6 +139,8 @@ def button_check_play(coord):
             if mas_flowers[x][y] == nots and cursor != shovel:
                 score -= cost[cursor]
                 mas_flowers[x][y] = cursor
+                if cursor == sunflower:
+                    sunflower_times[x][y] = time.time()
             elif cursor == shovel:
                 mas_flowers[x][y] = nots
             cursor = cursor_const
@@ -171,7 +173,7 @@ def plants_action():
     for x in range(5):
         for y in range(9):
             if mas_flowers[x][y] == sunflower:
-                if time.time() - sunflower_times[x][y] > 12:
+                if time.time() - sunflower_times[x][y] > 20:
                     sunflower_times[x][y] = time.time()
                     square_centre = (x * 155, y * 155 + 155)
                     flag_sunflowers[x][y] = 1
@@ -202,7 +204,7 @@ if __name__ == '__main__':
         for j in range(5):
             mas_flowers[i][j] = nots
     print(mas_flowers)
-    score = 0
+    score = 100
     font_name = pygame.font.match_font('arial')
     font = pygame.font.Font(font_name, 50)
     background = pygame.image.load("background.png").convert()
@@ -231,7 +233,7 @@ if __name__ == '__main__':
     pygame.display.flip()
     time_fl = 0
     cost = {pee: 100, nut: 50, cherry: 150, tomato: 50, thorns: 50, double_pee: 200, sunflower: 50}
-    sunflower_times = [[1000000000 for _ in range(9)] for _ in range(5)]
+    sunflower_times = [[100000000000 for _ in range(9)] for _ in range(5)]
     flag_sunflowers = [[0 for _ in range(9)] for _ in range(5)]
     square_centres = [[(x * 155, y * 155 + 155) for y in range(9)] for x in range(5)]
     now = datetime.datetime.now()
@@ -266,7 +268,7 @@ if __name__ == '__main__':
                     if volume < 1:
                         volume += 0.1
                     pygame.mixer.music.set_volume(volume)
-            if fl == "play" and time.time() - prev_time > 10:
+            if fl == "play" and time.time() - prev_time > 20:
                 prev_time = time.time()
                 if flag_sun_1 == 0:
                     flag_sun_1 = 1
@@ -284,6 +286,7 @@ if __name__ == '__main__':
                 for y in range(9):
                     if flag_sunflowers[x][y] == 1:
                         screen.blit(sun, square_centres[x][y])
+                        sunflower_times[x][y] = time.time()
             draw_cursor(pygame.mouse.get_pos())
             pygame.display.flip()
             clock.tick(60)
