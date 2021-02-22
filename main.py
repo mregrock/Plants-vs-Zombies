@@ -199,6 +199,7 @@ def draw_zombies():
     global zombies_y
     global zombie_eat_fl
     global mas_flowers
+    global zombie_hp
     if fl == "play":
         if len(zombies_x) == 0:
             zombies_x.append(1500)
@@ -206,6 +207,7 @@ def draw_zombies():
             zombie_eat_fl.append(0)
             zombie_anim_fl.append(0)
             zombies_anim.append(0)
+            zombie_hp.append(100)
         for i in range(len(zombies_x)):
             if zombie_eat_fl[i] == 0:
                 zombies_x[i] -= 0.5
