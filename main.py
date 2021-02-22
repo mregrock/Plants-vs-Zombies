@@ -90,7 +90,7 @@ def button_check_play(coord):
     global score
     global cost
     global cursor
-    global mas_flowers
+    global mas_flowers, pee_shoot_times, sunflower_times
     global flag_sun_1, flag_sun_2, flag_sun_3
     x, y = coord[0], coord[1]
     if y > 155:
@@ -144,6 +144,9 @@ def button_check_play(coord):
                     hp_flowers[x][y] = 500
                 if cursor == sunflower:
                     sunflower_times[x][y] = time.time()
+                if cursor == pee:
+                    pee_shoot_times[x][y] = time.time()
+                    pee_shoot_flags[x][y] = 1
             elif cursor == shovel:
                 mas_flowers[x][y] = nots
                 hp_flowers[x][y] = 0
@@ -277,6 +280,18 @@ def draw_sun():
                 sunflower_times[x][y] = time.time()
 
 
+def draw_pee_shots():
+    global pee_shot_coord, pee_shoot_flags, pee_shoot_times
+    for x in range(5):
+        for y in range(9):
+            if pee_shot_coord[x][y][0] < 1500 and pee_shot_coord[x][y][1] < 1000:
+                if mas_flowers[x][y] == pee and pee_shoot_flags[x][y] == 1:
+                    screen.blit(pee_shot, (pee_shot_coord[x][y][0] + 15, pee_shot_coord[x][y][1]))
+                    pee_shot_coord[x][y] = (pee_shot_coord[x][y][0] + 15, pee_shot_coord[x][y][1])
+            else:
+                pee_shot_coord[x][y] = (x * 155 + 15, y * 155 + 175)
+
+
 if __name__ == '__main__':
     pygame.init()
     pygame.display.set_caption("Plants vs zombos")
@@ -325,6 +340,7 @@ if __name__ == '__main__':
     nut_2 = pygame.image.load("nut_3.png")
     pee = pygame.image.load("pee.png")
     double_pee = pygame.image.load("double_pee.png")
+    pee_shot = pygame.image.load("pee_shot.png")
     cherry = pygame.image.load("cherry.png")
     thorns = pygame.image.load("thorns.png")
     shovel = pygame.image.load("shovel.png")
@@ -341,6 +357,9 @@ if __name__ == '__main__':
     time_fl = 0
     cost = {pee: 100, nut: 50, cherry: 150, tomato: 50, thorns: 50, double_pee: 200, sunflower: 50}
     sunflower_times = [[100000000000 for _ in range(9)] for _ in range(5)]
+    pee_shoot_times = [[100000000000 for _ in range(9)] for _ in range(5)]
+    pee_shoot_flags = [[0 for _ in range(9)] for _ in range(5)]
+    pee_shot_coord = [[(x * 155 + 15, y * 155 + 170) for y in range(9)] for x in range(5)]
     flag_sunflowers = [[0 for _ in range(9)] for _ in range(5)]
     square_centres = [[(x * 155, y * 155 + 155) for y in range(9)] for x in range(5)]
     now = datetime.datetime.now()
@@ -381,6 +400,7 @@ if __name__ == '__main__':
         draw_plants()
         draw_zombies()
         draw_sun()
+        draw_pee_shots()
         draw_cursor((mouse_x, mouse_y))
         pygame.display.flip()
 pygame.quit()
