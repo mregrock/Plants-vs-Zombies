@@ -154,10 +154,18 @@ def button_check_play(coord):
             fl_cursor = "const"
 
 
-def draw_plants():
+def checks():
     for i in range(9):
         for j in range(5):
-            screen.blit(mas_flowers[i][j], (i * 155 + 20, j * 155 + 175))
+            if mas_flowers[i][j] == POW:
+                mas_flowers[i][j] = nots
+
+
+def draw_plants():
+    global mas_flowers
+    for i in range(9):
+        for j in range(5):
+            screen.blit(mas_flowers[i][j], (i * 155 + 10, j * 155 + 175))
 
 
 def sun_down_1():
@@ -212,6 +220,14 @@ def draw_zombies():
             zombies_anim.append(0)
             zombie_hp.append(100)
         for i in range(len(zombies_x)):
+            if zombie_hp[i] <= 0:
+                del zombies_x[i]
+                del zombie_eat_fl[i]
+                del zombies_y[i]
+                del zombie_anim_fl[i]
+                del zombie_hp[i]
+                del zombies_anim[i]
+                break
             if zombie_eat_fl[i] == 0:
                 zombies_x[i] -= 0.5
                 screen.blit(anim_number[zombies_anim[i]], (zombies_x[i], zombies_y[i]))
@@ -219,9 +235,16 @@ def draw_zombies():
                 y1 = (zombies_y[i]) // 150
                 for y in range(5):
                     for x in range(9):
-                        if mas_flowers[x][y] != nots:
+                        if mas_flowers[x][y] != nots and mas_flowers[x][y] != thorns:
                             if x1 == x and y1 == y:
                                 zombie_eat_fl[i] = 1
+                        if mas_flowers[x][y] == thorns:
+                            if x1 == x and y1 == y:
+                                zombie_hp[i] -= 0.13
+                        if mas_flowers[x][y] == tomato:
+                            if x1 == x and y1 == y:
+                                zombie_hp[i] -= 1000
+                                mas_flowers[x][y] = POW
                 if zombie_anim_fl[i] < 9:
                     zombie_anim_fl[i] += 1
                 elif zombie_anim_fl[i] == 9:
@@ -320,7 +343,7 @@ if __name__ == '__main__':
     anim_number = [zombie_anim_1, zombie_anim_2, zombie_anim_3, zombie_anim_4]
     zombie_eat_fl = []
     zombie_anim_fl = []
-    zombie_helmet =[]
+    zombie_helmet = []
     zombie_hp = []
     score = 100
     font_name = pygame.font.match_font('arial')
@@ -345,9 +368,11 @@ if __name__ == '__main__':
     thorns = pygame.image.load("thorns.png")
     shovel = pygame.image.load("shovel.png")
     sun = pygame.image.load("sun.png")
+    POW = pygame.image.load("POW.png")
     pos_mouse_x = -100
     pos_mouse_y = -100
     fl = "start"
+    score = 1000
     # pygame.mixer.music.load('music_start.mp3')
     # pygame.mixer.music.play()
     running = True
