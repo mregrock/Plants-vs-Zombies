@@ -96,8 +96,8 @@ def button_check_play(coord):
     if y > 155:
         for i in range(5):
             for j in range(9):
-                if square_centres[i][j][0] + 15 >= x >= square_centres[i][j][0] \
-                        and square_centres[i][j][1] + 15 >= y >= square_centres[i][j][1] and flag_sunflowers[i][j] == 1:
+                if square_centres[i][j][0] + 50 >= x >= square_centres[i][j][0] \
+                        and square_centres[i][j][1] + 50 >= y >= square_centres[i][j][1] and flag_sunflowers[i][j] == 1:
                     flag_sunflowers[i][j] = 0
                     score += 50
 
@@ -118,15 +118,15 @@ def button_check_play(coord):
             cursor = thorns
         elif 1156 >= x >= 1056:
             cursor = shovel
-        elif 1400 <= x <= 1415 and 50 <= y <= 65 and flag_sun_1:
+        elif 1400 <= x <= 1450 and 50 <= y <= 100 and flag_sun_1:
             score += 100
             flag_sun_1 = 0
             prev_time = time.time()
-        elif 1460 <= x <= 1475 and 80 <= y <= 95 and flag_sun_2:
+        elif 1460 <= x <= 1510 and 80 <= y <= 130 and flag_sun_2:
             score += 100
             flag_sun_2 = 0
             prev_time = time.time()
-        elif 1450 <= x <= 1465 and 30 <= y <= 45 and flag_sun_3:
+        elif 1450 <= x <= 1500 and 30 <= y <= 80 and flag_sun_3:
             score += 100
             flag_sun_3 = 0
             prev_time = time.time()
@@ -155,9 +155,10 @@ def button_check_play(coord):
 
 
 def checks():
+    global pow_times
     for i in range(9):
         for j in range(5):
-            if mas_flowers[i][j] == POW:
+            if mas_flowers[i][j] == POW and time.time() - pow_times[i][j] > 2:
                 mas_flowers[i][j] = nots
 
 
@@ -188,7 +189,7 @@ def plants_action():
     for x in range(5):
         for y in range(9):
             if mas_flowers[x][y] == sunflower:
-                if time.time() - sunflower_times[x][y] > 20:
+                if time.time() - sunflower_times[x][y] > 15:
                     sunflower_times[x][y] = time.time()
                     square_centre = (x * 155, y * 155 + 155)
                     flag_sunflowers[x][y] = 1
@@ -208,6 +209,7 @@ def draw_zombies():
     global zombies_anim
     global zombies_x
     global zombies_y
+    global pee_shot_coord
     global zombie_eat_fl
     global mas_flowers
     global zombie_hp
@@ -240,11 +242,15 @@ def draw_zombies():
                                 zombie_eat_fl[i] = 1
                         if mas_flowers[x][y] == thorns:
                             if x1 == x and y1 == y:
-                                zombie_hp[i] -= 0.13
+                                zombie_hp[i] -= 0.3
                         if mas_flowers[x][y] == tomato:
                             if x1 == x and y1 == y:
                                 zombie_hp[i] -= 1000
                                 mas_flowers[x][y] = POW
+                                pow_times[x][y] = time.time()
+                        if zombies_x[i] - pee_shot_coord[y][x][0] < 20:
+                            zombie_hp[i] -= 34
+                            pee_shot_coord[y][x] = (y * 155 + 15, x * 155 + 175)
                 if zombie_anim_fl[i] < 9:
                     zombie_anim_fl[i] += 1
                 elif zombie_anim_fl[i] == 9:
@@ -282,7 +288,7 @@ def draw_sun():
     global flag_sun_1
     global flag_sun_2
     global flag_sun_3
-    if fl == "play" and time.time() - prev_time > 20:
+    if fl == "play" and time.time() - prev_time > 15:
         prev_time = time.time()
         if flag_sun_1 == 0:
             flag_sun_1 = 1
@@ -368,11 +374,12 @@ if __name__ == '__main__':
     thorns = pygame.image.load("thorns.png")
     shovel = pygame.image.load("shovel.png")
     sun = pygame.image.load("sun.png")
+    sun = pygame.transform.scale(sun, (50, 50))
     POW = pygame.image.load("POW.png")
     pos_mouse_x = -100
     pos_mouse_y = -100
     fl = "start"
-    score = 1000
+    score = 100
     # pygame.mixer.music.load('music_start.mp3')
     # pygame.mixer.music.play()
     running = True
@@ -383,6 +390,7 @@ if __name__ == '__main__':
     cost = {pee: 100, nut: 50, cherry: 150, tomato: 50, thorns: 50, double_pee: 200, sunflower: 50}
     sunflower_times = [[100000000000 for _ in range(9)] for _ in range(5)]
     pee_shoot_times = [[100000000000 for _ in range(9)] for _ in range(5)]
+    pow_times = [[100000000000 for _ in range(5)] for _ in range(9)]
     pee_shoot_flags = [[0 for _ in range(9)] for _ in range(5)]
     pee_shot_coord = [[(x * 155 + 15, y * 155 + 170) for y in range(9)] for x in range(5)]
     flag_sunflowers = [[0 for _ in range(9)] for _ in range(5)]
@@ -426,6 +434,7 @@ if __name__ == '__main__':
         draw_zombies()
         draw_sun()
         draw_pee_shots()
+        checks()
         draw_cursor((mouse_x, mouse_y))
         pygame.display.flip()
 pygame.quit()
