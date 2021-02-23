@@ -96,8 +96,8 @@ def button_check_play(coord):
     if y > 155:
         for i in range(5):
             for j in range(9):
-                if square_centres[i][j][0] + 15 >= x >= square_centres[i][j][0] \
-                        and square_centres[i][j][1] + 15 >= y >= square_centres[i][j][1] and flag_sunflowers[i][j] == 1:
+                if square_centres[i][j][0] + 50 >= x >= square_centres[i][j][0] \
+                        and square_centres[i][j][1] + 50 >= y >= square_centres[i][j][1] and flag_sunflowers[i][j] == 1:
                     flag_sunflowers[i][j] = 0
                     score += 50
 
@@ -118,15 +118,15 @@ def button_check_play(coord):
             cursor = thorns
         elif 1156 >= x >= 1056:
             cursor = shovel
-        elif 1400 <= x <= 1415 and 50 <= y <= 65 and flag_sun_1:
+        elif 1400 <= x <= 1450 and 50 <= y <= 100 and flag_sun_1:
             score += 25
             flag_sun_1 = 0
             prev_time = time.time()
-        elif 1460 <= x <= 1475 and 80 <= y <= 95 and flag_sun_2:
+        elif 1460 <= x <= 1510 and 80 <= y <= 130 and flag_sun_2:
             score += 25
             flag_sun_2 = 0
             prev_time = time.time()
-        elif 1450 <= x <= 1465 and 30 <= y <= 45 and flag_sun_3:
+        elif 1450 <= x <= 1500 and 30 <= y <= 80 and flag_sun_3:
             score += 25
             flag_sun_3 = 0
             prev_time = time.time()
@@ -513,6 +513,7 @@ if __name__ == '__main__':
     shovel = pygame.image.load("shovel.png")
     sun = pygame.image.load("sun.png")
     POW = pygame.image.load("POW.png")
+    sun = pygame.transform.scale(sun, (50, 50))
     pos_mouse_x = -100
     pos_mouse_y = -100
     fl = "start"
