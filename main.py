@@ -293,6 +293,17 @@ def draw_text():
     screen.blit(text_surface, text_rect)
 
 
+def draw_price():
+    if fl == "play":
+        screen.blit(font.render("50", True, black), [250, 100])
+        screen.blit(font.render("50", True, black), [100, 100])
+        screen.blit(font.render("100", True, black), [380, 100])
+        screen.blit(font.render("50", True, black), [550, 100])
+        screen.blit(font.render("200", True, black), [680, 100])
+        screen.blit(font.render("150", True, black), [830, 100])
+        screen.blit(font.render("125", True, black), [980, 100])
+
+
 def draw_zombies():
     global zombie_anim_fl
     global zombies_anim
@@ -335,7 +346,6 @@ def draw_zombies():
                             if x1 == x and y1 == y:
                                 zombie_eat_fl[i] = 1
                         if mas_flowers[x][y] in thorns_anim:
-                            print(zombie_hp[i])
                             if x1 == x and y1 == y:
                                 zombie_eat_fl[i] = 0
                                 zombie_hp[i] -= 0.15
@@ -459,7 +469,7 @@ def new_pee_shots():
             if zombies_y[j] // 150 == pee_y[i] and pee_coult[i] == 0 and pee_x[i] <= zombies_x[j] // 155:
                 pee_shot_x.append((pee_x[i] + 1) * 150 - 40)
                 pee_shot_y.append((pee_y[i] + 1) * 150 + 42)
-                pee_coult[i] = 300
+                pee_coult[i] = 50
             if pee_coult[i] > 0:
                 pee_coult[i] -= 1
 
@@ -515,6 +525,7 @@ if __name__ == '__main__':
         for j in range(5):
             mas_flowers[i][j] = nots
             hp_flowers[i][j] = 0
+    black = pygame.Color("black")
     zombies_x = []
     zombies_y = []
     zombies_y_const = [100, 250, 400, 550, 700]
@@ -560,8 +571,8 @@ if __name__ == '__main__':
     pee_x = []
     pee_y = []
     pee_coult = []
-    dpee_pps = [300, 50]
-    dpee_pps_fl = 0
+    dpee_pps = [60, 10]
+    dpee_pps_fl = 1
     double_pee = dpee_1 = pygame.image.load("double_pee_skin_1.png")
     dpee_2 = pygame.image.load("double_pee_skin_2.png")
     dpee_anim = [dpee_1, dpee_2]
@@ -591,6 +602,7 @@ if __name__ == '__main__':
     pos_mouse_y = -100
     fl = "start"
     score = 5000
+    reload_sunflower = reload_tomato = reload_pee = reload_double_pee = reload_nut = reload_thorns = 0
     pygame.mixer.music.load('music_start.mp3')
     pygame.mixer.music.play()
     running = True
@@ -616,7 +628,7 @@ if __name__ == '__main__':
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if fl == "start":
                     button_check_start(pygame.mouse.get_pos())
                 if fl == "help":
@@ -641,8 +653,10 @@ if __name__ == '__main__':
         new_pee_shots()
         new_double_pee_shots()
         draw_pee_shots()
+        draw_price()
         draw_zombies()
         cherry_bomb()
+        draw_price()
         draw_sun()
         draw_cursor((mouse_x, mouse_y))
         pygame.display.flip()
