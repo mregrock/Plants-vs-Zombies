@@ -170,6 +170,7 @@ def button_check_play(coord):
                     cherry_bomb_fl = 1
                     cherry_x = x * 150
                     cherry_y = y * 150
+                    hp_flowers[x][y] = 1000
             elif cursor == shovel:
                 if mas_flowers[x][y] in thorns_anim:
                     for i in range(len(thorns_x)):
@@ -192,6 +193,15 @@ def button_check_play(coord):
                             del pee_y[i]
                             del pee_fl[i]
                             del pee_coult[i]
+                if mas_flowers[x][y] in dpee_anim:
+                    for i in range(len(dpee_x)):
+                        if i >= len(dpee_x):
+                            break
+                        if dpee_x[i] == x and dpee_y[i] == y:
+                            del dpee_x[i]
+                            del dpee_y[i]
+                            del dpee_fl[i]
+                            del dpee_coult[i]
                 mas_flowers[x][y] = nots
                 hp_flowers[x][y] = 0
             cursor = cursor_const
@@ -292,6 +302,7 @@ def draw_zombies():
     global mas_flowers
     global zombie_hp
     global pee_coult, pee_y, pee_x, pee_anim
+    global dpee_coult, dpee_y, dpee_x, dpee_anim
     global pee_shot_coult, pee_shot_y, pee_shot_x, pee_shot_anim
     if fl == "play":
         if len(zombies_x) < 6:
@@ -333,6 +344,8 @@ def draw_zombies():
                                 for i in range(len(tomato_x)):
                                     if tomato_x[i] == x and tomato_y[i] == y:
                                         mas_flowers[x][y] = POW
+                if len(zombie_anim_fl) <= i:
+                    break
                 if zombie_anim_fl[i] < 6:
                     zombie_anim_fl[i] += 1
                 elif zombie_anim_fl[i] >= 6:
@@ -373,6 +386,15 @@ def draw_zombies():
                                             del pee_y[j]
                                             del pee_fl[j]
                                             del pee_coult[j]
+                                    for j in range(len(dpee_x)):
+                                        if j >= len(dpee_x):
+                                            break
+                                    if dpee_x[j] == x and dpee_y[j] == y:
+                                        del dpee_x[j]
+                                        del dpee_y[j]
+                                        del dpee_fl[j]
+                                        del dpee_coult[j]
+
                 screen.blit(anim_number[zombies_anim[i]], (zombies_x[i], zombies_y[i]))
 
 
@@ -414,7 +436,6 @@ def draw_pee_shots():
                 break
             if abs(zombies_x[j] - pee_shot_x[i]) <= 20 and zombies_y[j] // 150 + 1 == pee_shot_y[i] // 150:
                 zombie_hp[j] -= 4
-                # |++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                 del pee_shot_x[i]
                 del pee_shot_y[i]
         if len(pee_shot_x) <= i:
@@ -424,6 +445,10 @@ def draw_pee_shots():
                 break
             del pee_shot_x[i]
             del pee_shot_y[i]
+
+
+def new_pee_shots():
+    global pee_coult, pee_shot_y, pee_shot_x
     for i in range(len(pee_x)):
         for j in range(len(zombies_x)):
             if zombies_y[j] // 150 == pee_y[i] and pee_coult[i] == 0 and pee_x[i] <= zombies_x[j] // 155:
@@ -434,6 +459,19 @@ def draw_pee_shots():
                 pee_coult[i] -= 1
 
 
+def new_double_pee_shots():
+    global dpee_coult, pee_shot_y, pee_shot_x, dpee_pps_fl
+    for i in range(len(dpee_x)):
+        for j in range(len(zombies_x)):
+            if zombies_y[j] // 150 == dpee_y[i] and dpee_coult[i] == 0 and dpee_x[i] <= zombies_x[j] // 155:
+                pee_shot_x.append((dpee_x[i] + 1) * 150 - 40)
+                pee_shot_y.append((dpee_y[i] + 1) * 150 + 42)
+                dpee_coult[i] = dpee_pps[dpee_pps_fl]
+                dpee_pps_fl = 1 - dpee_pps_fl
+            if dpee_coult[i] > 0:
+                dpee_coult[i] -= 1
+
+
 def cherry_bomb():
     global cherry_bomb_fl, cherry_x, cherry_y
     if cherry_bomb_fl == 49:
@@ -442,7 +480,7 @@ def cherry_bomb():
                 if mas_flowers[x][y] == cherry:
                     mas_flowers[x][y] = nots
                     for k in range(len(zombies_x)):
-                        if int(zombies_x[k] // 155 - x) <= 1 and int(zombies_y[k] // 155 - y) <= 1:
+                        if abs(int(zombies_x[k] // 155 - x)) <= 1 and abs(int(zombies_y[k] // 155 - y)) <= 1:
                             zombie_hp[k] = 0
                     break
     if 100 >= cherry_bomb_fl >= 50:
@@ -517,6 +555,8 @@ if __name__ == '__main__':
     pee_x = []
     pee_y = []
     pee_coult = []
+    dpee_pps = [300, 50]
+    dpee_pps_fl = 0
     double_pee = dpee_1 = pygame.image.load("double_pee_skin_1.png")
     dpee_2 = pygame.image.load("double_pee_skin_2.png")
     dpee_anim = [dpee_1, dpee_2]
@@ -593,6 +633,8 @@ if __name__ == '__main__':
             pygame.display.set_caption("fps: " + str(clock.get_fps()))
         open_windows()
         draw_plants()
+        new_pee_shots()
+        new_double_pee_shots()
         draw_pee_shots()
         draw_zombies()
         cherry_bomb()
