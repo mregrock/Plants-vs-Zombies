@@ -57,7 +57,7 @@ def button_check_start(coord):
         open_windows()
         screen.blit(cursor, coord)
         pygame.display.flip()
-        pygame.mixer.music.load('play_music.mp3')
+        pygame.mixer.music.load('play_music2.mp3')
         pygame.mixer.music.play()
     if 1000 >= x >= 550 and 720 >= y >= 640:
         fl = "help"
