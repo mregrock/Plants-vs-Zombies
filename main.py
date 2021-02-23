@@ -485,7 +485,6 @@ if __name__ == '__main__':
     zombie_anim_fl = []
     zombie_helmet = []
     zombie_hp = []
-    score = 100
     font_name = pygame.font.match_font('arial')
     font = pygame.font.Font(font_name, 50)
     background = pygame.image.load("background.png").convert()
