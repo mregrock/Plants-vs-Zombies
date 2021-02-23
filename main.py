@@ -57,8 +57,8 @@ def button_check_start(coord):
         open_windows()
         screen.blit(cursor, coord)
         pygame.display.flip()
-        # pygame.mixer.music.load('play_music.mp3')
-        # pygame.mixer.music.play()
+        pygame.mixer.music.load('play_music.mp3')
+        pygame.mixer.music.play()
     if 1000 >= x >= 550 and 720 >= y >= 640:
         fl = "help"
         open_windows()
@@ -305,7 +305,7 @@ def draw_zombies():
     global dpee_coult, dpee_y, dpee_x, dpee_anim
     global pee_shot_coult, pee_shot_y, pee_shot_x, pee_shot_anim
     if fl == "play":
-        if len(zombies_x) < 6:
+        if len(zombies_x) < 1:
             zombies_x.append(1500)
             zombies_y.append(zombies_y_const[random.randrange(5)])
             zombie_eat_fl.append(0)
@@ -325,7 +325,7 @@ def draw_zombies():
             if i >= len(zombie_eat_fl):
                 break
             if zombie_eat_fl[i] == 0:
-                zombies_x[i] -= 1.4  # ---------------------------------------------------------------------------------
+                zombies_x[i] -= 1.4
                 screen.blit(anim_number[zombies_anim[i]], (zombies_x[i], zombies_y[i]))
                 x1 = zombies_x[i] // 150
                 y1 = (zombies_y[i]) // 150
@@ -335,8 +335,9 @@ def draw_zombies():
                             if x1 == x and y1 == y:
                                 zombie_eat_fl[i] = 1
                         if mas_flowers[x][y] in thorns_anim:
-                            zombie_eat_fl[i] = 0
+                            print(zombie_hp[i])
                             if x1 == x and y1 == y:
+                                zombie_eat_fl[i] = 0
                                 zombie_hp[i] -= 0.15
                         if mas_flowers[x][y] in tomato_anim:
                             if x1 == x and y1 == y:
@@ -370,6 +371,10 @@ def draw_zombies():
                     for y in range(5):
                         for x in range(9):
                             if x1 == x and y1 == y:
+                                if x + 1 < 10:
+                                    if mas_flowers[x + 1][y] in thorns_anim:
+                                        print(zombie_hp[i])
+                                        zombie_hp[i] -= 3
                                 hp_flowers[x][y] -= 10
                                 if hp_flowers[x][y] == 300:
                                     mas_flowers[x][y] = nut_1
@@ -378,22 +383,22 @@ def draw_zombies():
                                 if hp_flowers[x][y] == 0:
                                     mas_flowers[x][y] = nots
                                     zombie_eat_fl[i] = 0
-                                    for j in range(len(pee_x)):
-                                        if j >= len(pee_x):
+                                    for j1 in range(len(pee_x)):
+                                        if j1 >= len(pee_x):
                                             break
-                                        if pee_x[j] == x and pee_y[j] == y:
-                                            del pee_x[j]
-                                            del pee_y[j]
-                                            del pee_fl[j]
-                                            del pee_coult[j]
-                                    for j in range(len(dpee_x)):
-                                        if j >= len(dpee_x):
+                                        if pee_x[j1] == x and pee_y[j1] == y:
+                                            del pee_x[j1]
+                                            del pee_y[j1]
+                                            del pee_fl[j1]
+                                            del pee_coult[j1]
+                                    for j2 in range(len(dpee_x)):
+                                        if j2 >= len(dpee_x):
                                             break
-                                    if dpee_x[j] == x and dpee_y[j] == y:
-                                        del dpee_x[j]
-                                        del dpee_y[j]
-                                        del dpee_fl[j]
-                                        del dpee_coult[j]
+                                        if dpee_x[j2] == x and dpee_y[j2] == y:
+                                            del dpee_x[j2]
+                                            del dpee_y[j2]
+                                            del dpee_fl[j2]
+                                            del dpee_coult[j2]
 
                 screen.blit(anim_number[zombies_anim[i]], (zombies_x[i], zombies_y[i]))
 
@@ -586,8 +591,8 @@ if __name__ == '__main__':
     pos_mouse_y = -100
     fl = "start"
     score = 5000
-    # pygame.mixer.music.load('music_start.mp3')
-    # pygame.mixer.music.play()
+    pygame.mixer.music.load('music_start.mp3')
+    pygame.mixer.music.play()
     running = True
     open_windows()
     clock_time.tick(60)
