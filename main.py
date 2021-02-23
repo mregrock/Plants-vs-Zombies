@@ -119,15 +119,15 @@ def button_check_play(coord):
         elif 1156 >= x >= 1056:
             cursor = shovel
         elif 1400 <= x <= 1415 and 50 <= y <= 65 and flag_sun_1:
-            score += 100
+            score += 25
             flag_sun_1 = 0
             prev_time = time.time()
         elif 1460 <= x <= 1475 and 80 <= y <= 95 and flag_sun_2:
-            score += 100
+            score += 25
             flag_sun_2 = 0
             prev_time = time.time()
         elif 1450 <= x <= 1465 and 30 <= y <= 45 and flag_sun_3:
-            score += 100
+            score += 25
             flag_sun_3 = 0
             prev_time = time.time()
         if 1156 >= x >= 1:
@@ -140,6 +140,15 @@ def button_check_play(coord):
                 score -= cost[cursor]
                 mas_flowers[x][y] = cursor
                 hp_flowers[x][y] = 50
+                if cursor == double_pee:
+                    dpee_fl.append(0)
+                    dpee_x.append(x)
+                    dpee_y.append(y)
+                    dpee_coult.append(0)
+                if cursor == tomato:
+                    tomato_fl.append(0)
+                    tomato_x.append(x)
+                    tomato_y.append(y)
                 if cursor == thorns:
                     thorns_fl.append(0)
                     thorns_x.append(x)
@@ -153,6 +162,9 @@ def button_check_play(coord):
                     hp_flowers[x][y] = 500
                 if cursor == sunflower:
                     sunflower_times[x][y] = time.time()
+                    sunfl_fl.append(0)
+                    sunfl_x.append(x)
+                    sunfl_y.append(y)
             elif cursor == shovel:
                 if mas_flowers[x][y] in thorns_anim:
                     for i in range(len(thorns_x)):
@@ -160,6 +172,12 @@ def button_check_play(coord):
                             del thorns_x[i]
                             del thorns_y[i]
                             del thorns_fl[i]
+                if mas_flowers[x][y] in sunfl_anim:
+                    for i in range(len(sunfl_x)):
+                        if sunfl_x[i] == x and sunfl_y[i] == y:
+                            del sunfl_x[i]
+                            del sunfl_y[i]
+                            del sunfl_fl[i]
                 if mas_flowers[x][y] in pee_anim:
                     for i in range(len(pee_x)):
                         if i >= len(pee_x):
@@ -192,13 +210,34 @@ def draw_plants():
             thorns_fl[k] = 0
             mas_flowers[thorns_x[k]][thorns_y[k]] = thorns_anim[
                 1 - thorns_anim.index(mas_flowers[thorns_x[k]][thorns_y[k]])]
+    for k in range(len(tomato_fl)):
+        if tomato_fl[k] < 7:
+            tomato_fl[k] += 1
+        elif tomato_fl[k] == 7 and mas_flowers[tomato_x[k]][tomato_y[k]] in tomato_anim:
+            tomato_fl[k] = 0
+            mas_flowers[tomato_x[k]][tomato_y[k]] = tomato_anim[
+                1 - tomato_anim.index(mas_flowers[tomato_x[k]][tomato_y[k]])]
+    for k in range(len(sunfl_fl)):
+        if sunfl_fl[k] < 15:
+            sunfl_fl[k] += 1
+        elif sunfl_fl[k] == 15 and mas_flowers[sunfl_x[k]][sunfl_y[k]] in sunfl_anim:
+            sunfl_fl[k] = 0
+            mas_flowers[sunfl_x[k]][sunfl_y[k]] = sunfl_anim[
+                1 - sunfl_anim.index(mas_flowers[sunfl_x[k]][sunfl_y[k]])]
     for k in range(len(pee_fl)):
         if pee_fl[k] < 5:
             pee_fl[k] += 1
-        elif pee_fl[k] == 5:
+        elif pee_fl[k] == 5 and mas_flowers[pee_x[k]][pee_y[k]] in pee_anim:
             pee_fl[k] = 0
             mas_flowers[pee_x[k]][pee_y[k]] = pee_anim[
                 1 - pee_anim.index(mas_flowers[pee_x[k]][pee_y[k]])]
+    for k in range(len(dpee_fl)):
+        if dpee_fl[k] < 9:
+            dpee_fl[k] += 1
+        elif dpee_fl[k] == 9 and mas_flowers[dpee_x[k]][dpee_y[k]] in dpee_anim:
+            dpee_fl[k] = 0
+            mas_flowers[dpee_x[k]][dpee_y[k]] = dpee_anim[
+                1 - dpee_anim.index(mas_flowers[dpee_x[k]][dpee_y[k]])]
     for i in range(9):
         for j in range(5):
             screen.blit(mas_flowers[i][j], (i * 155 + 10, j * 155 + 175))
@@ -223,8 +262,8 @@ def plants_action():
     square_centre = (0, 0)
     for x in range(5):
         for y in range(9):
-            if mas_flowers[x][y] == sunflower:
-                if time.time() - sunflower_times[x][y] > 20:
+            if mas_flowers[x][y] in sunfl_anim:
+                if time.time() - sunflower_times[x][y] > 7:
                     sunflower_times[x][y] = time.time()
                     square_centre = (x * 155, y * 155 + 155)
                     flag_sunflowers[x][y] = 1
@@ -247,15 +286,19 @@ def draw_zombies():
     global zombie_eat_fl
     global mas_flowers
     global zombie_hp
+    global pee_coult, pee_y, pee_x, pee_anim
+    global pee_shot_coult, pee_shot_y, pee_shot_x, pee_shot_anim
     if fl == "play":
-        if len(zombies_x) == 0:
+        if len(zombies_x) < 6:
             zombies_x.append(1500)
             zombies_y.append(zombies_y_const[random.randrange(5)])
             zombie_eat_fl.append(0)
             zombie_anim_fl.append(0)
             zombies_anim.append(0)
-            zombie_hp.append(100)
+            zombie_hp.append(40)
         for i in range(len(zombies_x)):
+            if i >= len(zombie_hp):
+                break
             if zombie_hp[i] <= 0:
                 del zombies_x[i]
                 del zombie_eat_fl[i]
@@ -263,31 +306,41 @@ def draw_zombies():
                 del zombie_anim_fl[i]
                 del zombie_hp[i]
                 del zombies_anim[i]
+            if i >= len(zombie_eat_fl):
                 break
             if zombie_eat_fl[i] == 0:
-                zombies_x[i] -= 0.5
+                zombies_x[i] -= 1.4 #---------------------------------------------------------------------------------
                 screen.blit(anim_number[zombies_anim[i]], (zombies_x[i], zombies_y[i]))
                 x1 = zombies_x[i] // 150
                 y1 = (zombies_y[i]) // 150
                 for y in range(5):
                     for x in range(9):
-                        if mas_flowers[x][y] != nots and mas_flowers[x][y] not in thorns_anim:
+                        if mas_flowers[x][y] != nots:
                             if x1 == x and y1 == y:
                                 zombie_eat_fl[i] = 1
                         if mas_flowers[x][y] in thorns_anim:
+                            zombie_eat_fl[i] = 0
                             if x1 == x and y1 == y:
-                                zombie_hp[i] -= 0.13
-                        if mas_flowers[x][y] == tomato:
+                                zombie_hp[i] -= 0.15
+                        if mas_flowers[x][y] in tomato_anim:
                             if x1 == x and y1 == y:
                                 zombie_hp[i] -= 1000
-                                mas_flowers[x][y] = POW
-                if zombie_anim_fl[i] < 9:
+                                for i in range(len(tomato_x)):
+                                    if tomato_x[i] == x and tomato_y[i] == y:
+                                        mas_flowers[x][y] = POW
+                                        print("sss")
+                if zombie_anim_fl[i] < 6:
                     zombie_anim_fl[i] += 1
-                elif zombie_anim_fl[i] == 9:
+                elif zombie_anim_fl[i] >= 6:
                     zombie_anim_fl[i] = 0
                     zombies_anim[i] += 1
                     zombies_anim[i] %= 3
             else:
+                x1 = int(zombies_x[i] // 150)
+                y1 = int(zombies_y[i] // 150)
+                if mas_flowers[x1][y1] == nots:
+                    zombie_eat_fl[i] = 0
+                    zombies_anim[i] = 0
                 dop_trash = zombies_anim[i]
                 if dop_trash == 1 or dop_trash == 2:
                     zombies_anim[i] = 0
@@ -297,8 +350,6 @@ def draw_zombies():
                 elif zombie_anim_fl[i] == 20:
                     zombie_anim_fl[i] = 0
                     zombies_anim[i] = 3 - zombies_anim[i]
-                    x1 = zombies_x[i] // 150
-                    y1 = (zombies_y[i]) // 150
                     for y in range(5):
                         for x in range(9):
                             if x1 == x and y1 == y:
@@ -310,6 +361,14 @@ def draw_zombies():
                                 if hp_flowers[x][y] == 0:
                                     mas_flowers[x][y] = nots
                                     zombie_eat_fl[i] = 0
+                                    for j in range(len(pee_x)):
+                                        if j >= len(pee_x):
+                                            break
+                                        if pee_x[j] == x and pee_y[j] == y:
+                                            del pee_x[j]
+                                            del pee_y[j]
+                                            del pee_fl[j]
+                                            del pee_coult[j]
                 screen.blit(anim_number[zombies_anim[i]], (zombies_x[i], zombies_y[i]))
 
 
@@ -318,7 +377,7 @@ def draw_sun():
     global flag_sun_1
     global flag_sun_2
     global flag_sun_3
-    if fl == "play" and time.time() - prev_time > 20:
+    if fl == "play" and time.time() - prev_time > 10:
         prev_time = time.time()
         if flag_sun_1 == 0:
             flag_sun_1 = 1
@@ -332,8 +391,8 @@ def draw_sun():
         sun_down_2()
     if flag_sun_3:
         sun_down_3()
-    for x in range(5):
-        for y in range(9):
+    for y in range(5):
+        for x in range(9):
             if flag_sunflowers[x][y] == 1:
                 screen.blit(sun, square_centres[x][y])
                 sunflower_times[x][y] = time.time()
@@ -344,16 +403,18 @@ def draw_pee_shots():
     for i in range(len(pee_shot_x)):
         if len(pee_shot_x) <= i:
             i = 0
-        print(i)
         screen.blit(pee_shot, (pee_shot_x[i], pee_shot_y[i]))
-        pee_shot_x[i] += 8
+        pee_shot_x[i] += 13
         for j in range(len(zombies_x)):
-            if abs(zombies_x[j] - pee_shot_x[i]) <= 15 and zombies_y[j] // 150 + 1 == pee_shot_y[i] // 150:
-                if i >= len(zombie_hp):
-                    break
-                zombie_hp[i] -= 13
+            if j >= len(zombies_x) or i >= len(pee_shot_x):
+                break
+            if abs(zombies_x[j] - pee_shot_x[i]) <= 20 and zombies_y[j] // 150 + 1 == pee_shot_y[i] // 150:
+                zombie_hp[j] -= 4
+#|++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                 del pee_shot_x[i]
                 del pee_shot_y[i]
+        if len(pee_shot_x) <= i:
+            break
         if pee_shot_x[i] > 1500:
             if i > len(pee_shot_x):
                 break
@@ -361,10 +422,10 @@ def draw_pee_shots():
             del pee_shot_y[i]
     for i in range(len(pee_x)):
         for j in range(len(zombies_x)):
-            if zombies_y[j] // 150 == pee_y[i] and pee_coult[i] == 0:
+            if zombies_y[j] // 150 == pee_y[i] and pee_coult[i] == 0 and pee_x[i] <= zombies_x[j] // 155:
                 pee_shot_x.append((pee_x[i] + 1) * 150 - 40)
                 pee_shot_y.append((pee_y[i] + 1) * 150 + 42)
-                pee_coult[i] = 60
+                pee_coult[i] = 300
             if pee_coult[i] > 0:
                 pee_coult[i] -= 1
 
@@ -410,8 +471,18 @@ if __name__ == '__main__':
     Eplay = pygame.image.load("button_exit.png").convert()
     H_back = pygame.image.load("back_help.png").convert()
     page = pygame.image.load("page.png").convert()
-    tomato = pygame.image.load("tomato.png")
-    sunflower = pygame.image.load("sunflower.png")
+    tomato_1 = tomato = pygame.image.load("tomato_skin_1.png")
+    tomato_2 = pygame.image.load("tomato_skin_2.png")
+    tomato_x = []
+    tomato_y = []
+    tomato_fl = []
+    tomato_anim = [tomato_1, tomato_2]
+    sunfl_1 = sunflower = pygame.image.load("sunflower_skin_1.png")
+    sunfl_2 = pygame.image.load("sunflower_skin_2.png")
+    sunfl_x = []
+    sunfl_y = []
+    sunfl_fl = []
+    sunfl_anim = [sunfl_1, sunfl_2]
     nut = pygame.image.load("nut.png")
     nut_1 = pygame.image.load("nut_2.png")
     nut_2 = pygame.image.load("nut_3.png")
@@ -422,7 +493,13 @@ if __name__ == '__main__':
     pee_x = []
     pee_y = []
     pee_coult = []
-    double_pee = pygame.image.load("double_pee.png")
+    double_pee = dpee_1 = pygame.image.load("double_pee_skin_1.png")
+    dpee_2 = pygame.image.load("double_pee_skin_2.png")
+    dpee_anim = [dpee_1, dpee_2]
+    dpee_fl = []
+    dpee_x = []
+    dpee_y = []
+    dpee_coult = []
     pee_shot = pygame.image.load("pee_shot.png")
     pee_shot_x = []
     pee_shot_y = []
@@ -439,7 +516,7 @@ if __name__ == '__main__':
     pos_mouse_x = -100
     pos_mouse_y = -100
     fl = "start"
-    score = 1000
+    score = 5000
     # pygame.mixer.music.load('music_start.mp3')
     # pygame.mixer.music.play()
     running = True
@@ -448,9 +525,9 @@ if __name__ == '__main__':
     pygame.display.flip()
     time_fl = 0
     cost = {pee: 100, nut: 50, cherry: 150, tomato: 50, thorns: 50, double_pee: 200, sunflower: 50}
-    sunflower_times = [[100000000000 for _ in range(9)] for _ in range(5)]
-    flag_sunflowers = [[0 for _ in range(9)] for _ in range(5)]
-    square_centres = [[(x * 155, y * 155 + 155) for y in range(9)] for x in range(5)]
+    sunflower_times = [[100000000000 for _ in range(5)] for _ in range(9)]
+    flag_sunflowers = [[0 for _ in range(5)] for _ in range(9)]
+    square_centres = [[(y * 155, x * 155 + 155) for x in range(9)] for y in range(5)]
     now = datetime.datetime.now()
     then = datetime.datetime.now()
     pygame.mixer.music.set_volume(0.5)
@@ -486,8 +563,8 @@ if __name__ == '__main__':
             clock.tick(60)
             pygame.display.set_caption("fps: " + str(clock.get_fps()))
         open_windows()
-        draw_pee_shots()
         draw_plants()
+        draw_pee_shots()
         draw_zombies()
         draw_sun()
         draw_cursor((mouse_x, mouse_y))
