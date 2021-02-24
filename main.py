@@ -94,6 +94,8 @@ def button_check_play(coord):
     global mas_flowers, sunflower_times
     global flag_sun_1, flag_sun_2, flag_sun_3
     global reload_nut, reload_double_pee, reload_pee, reload_sunflower, reload_tomato, reload_cherry, reload_thorns
+    global last_reload_sunflower, last_reload_tomato, last_reload_pee, last_reload_double_pee \
+        , last_reload_nut, last_reload_thorns, last_reload_cherry
     x, y = coord[0], coord[1]
     if y > 155:
         for i in range(5):
@@ -146,43 +148,48 @@ def button_check_play(coord):
                     dpee_fl.append(0)
                     dpee_x.append(x)
                     dpee_y.append(y)
-                    pygame.time.Clock().tick()
-                    dpee_coult.append(pygame.time.get_ticks())
-                    last_dpee_coult.append(pygame.time.get_ticks())
+                    dpee_coult.append(now)
+                    last_dpee_coult.append(now)
                     reload_double_pee = 10
+                    last_reload_double_pee = now
                 if cursor == tomato:
                     tomato_fl.append(0)
                     tomato_x.append(x)
                     tomato_y.append(y)
                     reload_tomato = 40
+                    last_reload_tomato = now
                 if cursor == thorns:
                     thorns_fl.append(0)
                     thorns_x.append(x)
                     thorns_y.append(y)
                     reload_thorns = 20
+                    last_reload_thorns = now
                 if cursor == pee:
                     pee_fl.append(0)
                     pee_x.append(x)
                     pee_y.append(y)
-                    pygame.time.Clock().tick()
-                    pee_coult.append(pygame.time.get_ticks())
-                    last_pee_coult.append(pygame.time.get_ticks())
+                    pee_coult.append(now)
+                    last_pee_coult.append(now)
                     reload_pee = 7
+                    last_reload_pee = now
                 if cursor == nut:
                     hp_flowers[x][y] = 500
                     reload_nut = 30
+                    last_reload_nut = now
                 if cursor == sunflower:
                     sunflower_times[x][y] = time.time()
                     sunfl_fl.append(0)
                     sunfl_x.append(x)
                     sunfl_y.append(y)
                     reload_sunflower = 5
+                    last_reload_sunflower = now
                 if cursor == cherry:
                     cherry_bomb_fl = 1
                     cherry_x = x * 150
                     cherry_y = y * 150
                     hp_flowers[x][y] = 1000
                     reload_cherry = 60
+                    last_reload_cherry = now
             elif cursor == shovel:
                 if mas_flowers[x][y] in thorns_anim:
                     for i in range(len(thorns_x)):
@@ -440,8 +447,9 @@ def draw_zombies():
         zombie_wave_fl += 750
     kolvo_zombie = zombie_wave_fl // 750 + 1
     zombie_wave_fl += 1
+    print(len(zombies_x))
     if fl == "play":
-        if len(zombies_x) < zombie_waves[kolvo_zombie]:
+        while len(zombies_x) < zombie_waves[kolvo_zombie]:
             zombies_x.append(1700)
             zombies_y.append(zombies_y_const[random.randrange(5)])
             zombie_eat_fl.append(0)
@@ -518,35 +526,29 @@ def new_pee_shots():
     global pee_coult, pee_shot_y, pee_shot_x, last_pee_coult
     for i in range(len(pee_x)):
         for j in range(len(zombies_x)):
-            pygame.time.Clock().tick()
-            pee_coult[i] = pygame.time.get_ticks()
+            pee_coult[i] = now
             if int(pee_coult[i] - last_pee_coult[i]) >= 2000 and zombies_y[j] // 150 == pee_y[i] \
                     and pee_x[i] <= zombies_x[j] // 155 and zombies_x[j] <= 1500:
                 pee_shot_x.append((pee_x[i] + 1) * 150 - 40)
                 pee_shot_y.append((pee_y[i] + 1) * 150 + 42)
-                pygame.time.Clock().tick()
                 last_pee_coult[i] = pee_coult[i]
-                pee_coult[i] = pygame.time.get_ticks()
-            pygame.time.Clock().tick()
-            pee_coult[i] = pygame.time.get_ticks()
+                pee_coult[i] = now
+            pee_coult[i] = now
 
 
 def new_double_pee_shots():
     global dee_coult, dpee_shot_y, dpee_shot_x, last_dpee_coult, dpee_pps_fl
     for i in range(len(dpee_x)):
         for j in range(len(zombies_x)):
-            pygame.time.Clock().tick()
-            dpee_coult[i] = pygame.time.get_ticks()
+            dpee_coult[i] = now
             if int(dpee_coult[i] - last_dpee_coult[i]) >= dpee_pps[dpee_pps_fl] and zombies_y[j] // 150 == dpee_y[i] \
                     and dpee_x[i] <= zombies_x[j] // 155 and zombies_x[j] <= 1500:
                 pee_shot_x.append((dpee_x[i] + 1) * 150 - 40)
                 pee_shot_y.append((dpee_y[i] + 1) * 150 + 42)
-                pygame.time.Clock().tick()
                 last_dpee_coult[i] = dpee_coult[i]
-                dpee_coult[i] = pygame.time.get_ticks()
+                dpee_coult[i] = now
                 dpee_pps_fl = 1 - dpee_pps_fl
-            pygame.time.Clock().tick()
-            dpee_coult[i] = pygame.time.get_ticks()
+            dpee_coult[i] = pygame.now
 
 
 def cherry_bomb():
@@ -575,20 +577,29 @@ def cherry_bomb():
 
 def reload():
     global reload_nut, reload_double_pee, reload_pee, reload_cherry, reload_tomato, reload_sunflower, reload_thorns
-    i = 0.037
-    if reload_nut > 0:
+    global last_reload_nut, last_reload_double_pee, last_reload_pee, last_reload_cherry,\
+        last_reload_tomato, last_reload_sunflower, last_reload_thorns
+    i = 0.1
+    if reload_nut > 0 and now - last_reload_nut >= 1000:
+        last_reload_nut = now
         reload_nut -= i
-    if reload_sunflower > 0:
+    if reload_sunflower > 0 and now - last_reload_sunflower >= 50:
+        last_reload_sunflower = now
         reload_sunflower -= i
-    if reload_thorns > 0:
+    if reload_thorns > 0 and now - last_reload_thorns >= 1000:
+        last_reload_thorns = now
         reload_thorns -= i
-    if reload_pee > 0:
+    if reload_pee > 0 and now - last_reload_pee >= 1000:
+        last_reload_pee = now
         reload_pee -= i
-    if reload_double_pee > 0:
+    if reload_double_pee > 0 and now - last_reload_double_pee >= 1000:
+        last_reload_double_pee = now
         reload_double_pee -= i
-    if reload_cherry > 0:
+    if reload_cherry > 0 and now - last_reload_cherry >= 1000:
+        last_reload_cherry = now
         reload_cherry -= i
-    if reload_tomato > 0:
+    if reload_tomato > 0 and now - last_reload_tomato >= 1000:
+        last_reload_tomato = now
         reload_tomato -= i
 
 
@@ -695,8 +706,10 @@ if __name__ == '__main__':
     pos_mouse_x = -100
     pos_mouse_y = -100
     fl = "start"
-    score = 50
+    score = 5000.
     reload_sunflower = reload_tomato = reload_pee = reload_double_pee = reload_nut = reload_thorns = reload_cherry = 0
+    last_reload_sunflower = last_reload_tomato = last_reload_pee = last_reload_double_pee \
+        = last_reload_nut = last_reload_thorns = last_reload_cherry = 0
     pygame.mixer.music.load('music_start.mp3')
     pygame.mixer.music.play()
     running = True
@@ -708,8 +721,6 @@ if __name__ == '__main__':
     sunflower_times = [[100000000000 for _ in range(5)] for _ in range(9)]
     flag_sunflowers = [[0 for _ in range(5)] for _ in range(9)]
     square_centres = [[(y * 155, x * 155 + 155) for x in range(9)] for y in range(5)]
-    now = datetime.datetime.now()
-    then = datetime.datetime.now()
     pygame.mixer.music.set_volume(0.5)
     volume = pygame.mixer.music.get_volume()
     prev_time = 0
@@ -746,6 +757,8 @@ if __name__ == '__main__':
             pygame.display.flip()
             clock.tick(60)
             pygame.display.set_caption("fps: " + str(clock.get_fps()))
+        pygame.time.Clock().tick()
+        now = pygame.time.get_ticks()
         open_windows()
         if win_fl == 0:
             draw_plants()
