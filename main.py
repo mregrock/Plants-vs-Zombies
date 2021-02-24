@@ -498,7 +498,7 @@ def draw_pee_shots():
         if len(pee_shot_x) <= i:
             i = 0
         screen.blit(pee_shot, (pee_shot_x[i], pee_shot_y[i]))
-        pee_shot_x[i] += 13
+        pee_shot_x[i] += 10
         for j in range(len(zombies_x)):
             if j >= len(zombies_x) or i >= len(pee_shot_x):
                 break
@@ -571,27 +571,28 @@ def reload():
     global reload_nut, reload_double_pee, reload_pee, reload_cherry, reload_tomato, reload_sunflower, reload_thorns
     global last_reload_nut, last_reload_double_pee, last_reload_pee, last_reload_cherry, \
         last_reload_tomato, last_reload_sunflower, last_reload_thorns
-    i = 0.1
-    if reload_nut > 0 and now - last_reload_nut >= 1000:
-        last_reload_nut = now
+    i = 0.037
+    now = time.time()
+    if reload_nut > 0 and now - last_reload_nut >= i:
+        last_reload_nut -= i
         reload_nut -= i
-    if reload_sunflower > 0 and now - last_reload_sunflower >= 50:
-        last_reload_sunflower = now
+    if reload_sunflower > 0 and now - last_reload_sunflower >= i:
+        last_reload_sunflower -= i
         reload_sunflower -= i
-    if reload_thorns > 0 and now - last_reload_thorns >= 1000:
-        last_reload_thorns = now
+    if reload_thorns > 0 and now - last_reload_thorns >= i:
+        last_reload_thorns -= i
         reload_thorns -= i
-    if reload_pee > 0 and now - last_reload_pee >= 1000:
-        last_reload_pee = now
+    if reload_pee > 0 and now - last_reload_pee >= i:
+        last_reload_pee -= i
         reload_pee -= i
-    if reload_double_pee > 0 and now - last_reload_double_pee >= 1000:
-        last_reload_double_pee = now
+    if reload_double_pee > 0 and now - last_reload_double_pee >= i:
+        last_reload_double_pee = i
         reload_double_pee -= i
-    if reload_cherry > 0 and now - last_reload_cherry >= 1000:
-        last_reload_cherry = now
+    if reload_cherry > 0 and now - last_reload_cherry >= i:
+        last_reload_cherry -= i
         reload_cherry -= i
-    if reload_tomato > 0 and now - last_reload_tomato >= 1000:
-        last_reload_tomato = now
+    if reload_tomato > 0 and now - last_reload_tomato >= i:
+        last_reload_tomato -= i
         reload_tomato -= i
 
 
