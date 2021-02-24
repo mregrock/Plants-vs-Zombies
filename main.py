@@ -86,7 +86,7 @@ def check_score(price):
 
 
 def button_check_play(coord):
-    global cherry_bomb_fl, cherry_x, cherry_y
+    global cherry_bomb_fl, cherry_x, cherry_y, sun_take, planting_sound
     global fl_cursor, prev_time
     global score
     global cost
@@ -104,6 +104,7 @@ def button_check_play(coord):
                 if square_centres[i][j][0] + 50 >= x >= square_centres[i][j][0] \
                         and square_centres[i][j][1] + 50 >= y >= square_centres[i][j][1] and flag_sunflowers[i][j] == 1:
                     flag_sunflowers[i][j] = 0
+                    sun_take.play()
                     score += 50
 
     elif 155 >= y >= 0:
@@ -126,14 +127,17 @@ def button_check_play(coord):
         elif 1400 <= x <= 1450 and 50 <= y <= 100 and flag_sun_1:
             score += 25
             flag_sun_1 = 0
+            sun_take.play()
             prev_time = time.time()
         elif 1460 <= x <= 1510 and 80 <= y <= 130 and flag_sun_2:
             score += 25
             flag_sun_2 = 0
+            sun_take.play()
             prev_time = time.time()
         elif 1450 <= x <= 1500 and 30 <= y <= 80 and flag_sun_3:
             score += 25
             flag_sun_3 = 0
+            sun_take.play()
             prev_time = time.time()
         if 1156 >= x >= 1:
             fl_cursor = "not const"
@@ -146,6 +150,7 @@ def button_check_play(coord):
                 score -= cost[cursor]
                 mas_flowers[x][y] = cursor
                 hp_flowers[x][y] = 50
+                planting_sound.play()
                 if cursor == double_pee:
                     dpee_fl.append(time_now)
                     dpee_x.append(x)
@@ -153,45 +158,59 @@ def button_check_play(coord):
                     dpee_coult.append(time.time())
                     last_dpee_coult.append(time.time())
                     reload_double_pee = 10
+                    flag_reload[4] = False
+                    flag_start_reload[4] = True
                     last_reload_double_pee = time.time()
                 if cursor == tomato:
                     tomato_fl.append(time.time())
                     tomato_x.append(x)
                     tomato_y.append(y)
                     reload_tomato = 40
+                    flag_reload[0] = False
+                    flag_start_reload[0] = True
                     last_reload_tomato = time.time()
                 if cursor == thorns:
                     thorns_fl.append(time_now)
                     thorns_x.append(x)
                     thorns_y.append(y)
                     reload_thorns = 20
-                    last_reload_thorns =  now_time
+                    flag_reload[6] = False
+                    flag_start_reload[6] = True
+                    last_reload_thorns = now_time
                 if cursor == pee:
                     pee_fl.append(time_now)
                     pee_x.append(x)
                     pee_y.append(y)
-                    pee_coult.append( now_time)
-                    last_pee_coult.append( now_time)
+                    pee_coult.append(now_time)
+                    last_pee_coult.append(now_time)
                     reload_pee = 7
-                    last_reload_pee =  now_time
+                    flag_reload[2] = False
+                    flag_start_reload[2] = True
+                    last_reload_pee = now_time
                 if cursor == nut:
                     hp_flowers[x][y] = 500
                     reload_nut = 30
-                    last_reload_nut =  now_time
+                    flag_reload[3] = False
+                    flag_start_reload[3] = True
+                    last_reload_nut = now_time
                 if cursor == sunflower:
                     sunflower_times[x][y] = time_now
                     sunfl_fl.append(time_now)
                     sunfl_x.append(x)
                     sunfl_y.append(y)
+                    flag_reload[1] = False
+                    flag_start_reload[1] = True
                     reload_sunflower = 5
-                    last_reload_sunflower =  now_time
+                    last_reload_sunflower = now_time
                 if cursor == cherry:
                     cherry_bomb_fl = time_now
                     cherry_x = x * 150
                     cherry_y = y * 150
                     hp_flowers[x][y] = 1000
                     reload_cherry = 60
-                    last_reload_cherry =  now_time
+                    flag_reload[5] = False
+                    flag_start_reload[5] = True
+                    last_reload_cherry = now_time
             elif cursor == shovel:
                 if mas_flowers[x][y] in thorns_anim:
                     for i in range(len(thorns_x)):
@@ -334,8 +353,8 @@ def draw_reload():
 
 
 def draw_sort_zombies(i):
-    global zombie_anim_fl, zombies_anim, zombies_x, zombies_y, zombie_eat_fl, last_run
-    global mas_flowers, zombie_hp
+    global zombie_anim_fl, zombies_anim, zombies_x, zombies_y, zombie_eat_fl, last_run, tomato_sound
+    global mas_flowers, zombie_hp, eating_sound
     global pee_coult, pee_y, pee_x, pee_anim, last_pee_coult
     global dpee_coult, dpee_y, dpee_x, dpee_anim, last_dpee_coult
     global pee_shot_coult, pee_shot_y, pee_shot_x, pee_shot_anim
@@ -382,6 +401,7 @@ def draw_sort_zombies(i):
                         zombie_hp[i] -= 1000
                         for i in range(len(tomato_x)):
                             if tomato_x[i] == x and tomato_y[i] == y:
+                                tomato_sound.play()
                                 mas_flowers[x][y] = POW
     elif now_time - last_run[i] >= 0.1:
         x1 = int(zombies_x[i] // 150)
@@ -402,6 +422,7 @@ def draw_sort_zombies(i):
                         if x + 1 < 10:
                             if mas_flowers[x + 1][y] in thorns_anim:
                                 zombie_hp[i] -= 3
+                        eating_sound.play()
                         hp_flowers[x][y] -= 5
                         if hp_flowers[x][y] == 300:
                             mas_flowers[x][y] = nut_1
@@ -496,7 +517,7 @@ def draw_sun():
 
 
 def draw_pee_shots():
-    global pee_coult, pee_shot_y, pee_shot_x, last_pee_coult
+    global pee_coult, pee_shot_y, pee_shot_x, last_pee_coult, pee_pop
     for i in range(len(pee_shot_x)):
         if len(pee_shot_x) <= i:
             i = 0
@@ -506,6 +527,7 @@ def draw_pee_shots():
             if j >= len(zombies_x) or i >= len(pee_shot_x):
                 break
             if abs(zombies_x[j] - pee_shot_x[i]) <= 20 and zombies_y[j] // 150 + 1 == pee_shot_y[i] // 150:
+                pee_pop.play()
                 zombie_hp[j] -= 4
                 del pee_shot_x[i]
                 del pee_shot_y[i]
@@ -549,7 +571,7 @@ def new_double_pee_shots():
 
 
 def cherry_bomb():
-    global cherry_bomb_fl, cherry_x, cherry_y, Pow_cherry_fl, cherry_fl
+    global cherry_bomb_fl, cherry_x, cherry_y, Pow_cherry_fl, cherry_fl, cherry_pow_2
     time_now = now_time
     if time_now - cherry_bomb_fl >= 2:
         cherry_x = -1000
@@ -561,9 +583,11 @@ def cherry_bomb():
                     mas_flowers[x][y] = Pow_cherry
                     for k in range(len(zombies_x)):
                         if abs(int(zombies_x[k] // 155 - x)) <= 1 and abs(int(zombies_y[k] // 155 - y)) <= 1:
+                            cherry_pow_2.play()
                             zombie_hp[k] = 0
                         if zombie_eat_fl[k] == 1 and zombies_x[k] // 155 == x - 2 \
                                 and abs(int(zombies_y[k] // 155 - y)) <= 1:
+                            cherry_pow_2.play()
                             zombie_hp[k] = 0
                     break
                 if mas_flowers[x][y] == Pow_cherry and cherry_fl == 0:
@@ -573,11 +597,10 @@ def cherry_bomb():
                     mas_flowers[x][y] = nots
 
 
-
 def reload():
     global reload_nut, reload_double_pee, reload_pee, reload_cherry, reload_tomato, reload_sunflower, reload_thorns
     global last_reload_nut, last_reload_double_pee, last_reload_pee, last_reload_cherry, \
-        last_reload_tomato, last_reload_sunflower, last_reload_thorns
+        last_reload_tomato, last_reload_sunflower, last_reload_thorns, reload_sound, flag_reload, flag_start_reload
     i = 0.037
     now = time.time()
     if reload_nut > 0 and now - last_reload_nut >= i:
@@ -601,6 +624,34 @@ def reload():
     if reload_tomato > 0 and now - last_reload_tomato >= i:
         last_reload_tomato -= i
         reload_tomato -= i
+    if int(reload_tomato + 0.999) == 0 and not flag_reload[0]:
+        if flag_start_reload[0]:
+            flag_reload[0] = True
+            reload_sound.play()
+    if int(reload_sunflower + 0.999) == 0 and not flag_reload[1]:
+        if flag_start_reload[1]:
+            flag_reload[1] = True
+            reload_sound.play()
+    if int(reload_pee + 0.999) == 0 and not flag_reload[2]:
+        if flag_start_reload[2]:
+            flag_reload[2] = True
+            reload_sound.play()
+    if int(reload_nut + 0.999) == 0 and not flag_reload[3]:
+        if flag_start_reload[3]:
+            flag_reload[3] = True
+            reload_sound.play()
+    if int(reload_double_pee + 0.999) == 0 and not flag_reload[4]:
+        if flag_start_reload[4]:
+            flag_reload[4] = True
+            reload_sound.play()
+    if int(reload_cherry + 0.999) == 0 and not flag_reload[5]:
+        if flag_start_reload[5]:
+            flag_reload[5] = True
+            reload_sound.play()
+    if int(reload_thorns + 0.999) == 0 and not flag_reload[6]:
+        if flag_start_reload[6]:
+            flag_reload[6] = True
+            reload_sound.play()
 
 
 def win_text():
@@ -640,7 +691,7 @@ if __name__ == '__main__':
     zombie_helmet = []
     zombie_hp = []
     zombie_waves = [0, 1, 2, 4, 10, 5, 4, 7, 20, 11, 9, 13, 30, 0]
-    zombie_wave_fl = -400
+    #zombie_wave_fl = -400
     kolvo_zombie = 0
     font_name = pygame.font.match_font('arial')
     font = pygame.font.Font(font_name, 50)
@@ -707,7 +758,7 @@ if __name__ == '__main__':
     pos_mouse_x = -100
     pos_mouse_y = -100
     fl = "start"
-    score = 5000.
+    score = 50
     reload_sunflower = reload_tomato = reload_pee = reload_double_pee = reload_nut = reload_thorns = reload_cherry = 0
     last_reload_sunflower = last_reload_tomato = last_reload_pee = last_reload_double_pee \
         = last_reload_nut = last_reload_thorns = last_reload_cherry = 0
@@ -723,8 +774,17 @@ if __name__ == '__main__':
     sunflower_times = [[100000000000 for _ in range(5)] for _ in range(9)]
     flag_sunflowers = [[0 for _ in range(5)] for _ in range(9)]
     square_centres = [[(y * 155, x * 155 + 155) for x in range(9)] for y in range(5)]
+    flag_reload = [False for i in range(7)]
+    flag_start_reload = [False for i in range(7)]
     pygame.mixer.music.set_volume(0.5)
     volume = pygame.mixer.music.get_volume()
+    cherry_pow_2 = pygame.mixer.Sound('cherry_pow_2.mp3')
+    pee_pop = pygame.mixer.Sound('pee_pop.mp3')
+    sun_take = pygame.mixer.Sound('sun_take.mp3')
+    reload_sound = pygame.mixer.Sound('reload_sound.mp3')
+    planting_sound = pygame.mixer.Sound('planting_sound.mp3')
+    eating_sound = pygame.mixer.Sound('eating_sound.mp3')
+    tomato_sound = pygame.mixer.Sound('tomato_sound.mp3')
     prev_time = 0
     flag_sun_1 = 0
     flag_sun_2 = 0
