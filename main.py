@@ -137,6 +137,7 @@ def button_check_play(coord):
         if 1156 >= x >= 1:
             fl_cursor = "not const"
     if fl_cursor == "not const" and cursor_const != cursor:
+        time_now = time.time()
         if 930 >= y >= 155 and 1550 >= x >= 1:
             x = x // 155
             y = (y - 155) // 155
@@ -145,7 +146,7 @@ def button_check_play(coord):
                 mas_flowers[x][y] = cursor
                 hp_flowers[x][y] = 50
                 if cursor == double_pee:
-                    dpee_fl.append(0)
+                    dpee_fl.append(time_now)
                     dpee_x.append(x)
                     dpee_y.append(y)
                     dpee_coult.append(now)
@@ -153,19 +154,19 @@ def button_check_play(coord):
                     reload_double_pee = 10
                     last_reload_double_pee = now
                 if cursor == tomato:
-                    tomato_fl.append(0)
+                    tomato_fl.append(time_now)
                     tomato_x.append(x)
                     tomato_y.append(y)
                     reload_tomato = 40
                     last_reload_tomato = now
                 if cursor == thorns:
-                    thorns_fl.append(0)
+                    thorns_fl.append(time_now)
                     thorns_x.append(x)
                     thorns_y.append(y)
                     reload_thorns = 20
                     last_reload_thorns = now
                 if cursor == pee:
-                    pee_fl.append(0)
+                    pee_fl.append(time_now)
                     pee_x.append(x)
                     pee_y.append(y)
                     pee_coult.append(now)
@@ -177,14 +178,14 @@ def button_check_play(coord):
                     reload_nut = 30
                     last_reload_nut = now
                 if cursor == sunflower:
-                    sunflower_times[x][y] = time.time()
-                    sunfl_fl.append(0)
+                    sunflower_times[x][y] = time_now
+                    sunfl_fl.append(time_now)
                     sunfl_x.append(x)
                     sunfl_y.append(y)
                     reload_sunflower = 5
                     last_reload_sunflower = now
                 if cursor == cherry:
-                    cherry_bomb_fl = 1
+                    cherry_bomb_fl = time_now
                     cherry_x = x * 150
                     cherry_y = y * 150
                     hp_flowers[x][y] = 1000
@@ -239,39 +240,30 @@ def checks():
 def draw_plants():
     global thorns_fl
     global mas_flowers
+    time_now = time.time()
     for k in range(len(thorns_fl)):
-        if thorns_fl[k] < 5:
-            thorns_fl[k] += 1
-        elif thorns_fl[k] == 5:
-            thorns_fl[k] = 0
+        if time_now - thorns_fl[k] > 0.2:
+            thorns_fl[k] = time_now
             mas_flowers[thorns_x[k]][thorns_y[k]] = thorns_anim[
                 1 - thorns_anim.index(mas_flowers[thorns_x[k]][thorns_y[k]])]
     for k in range(len(tomato_fl)):
-        if tomato_fl[k] < 7:
-            tomato_fl[k] += 1
-        elif tomato_fl[k] == 7 and mas_flowers[tomato_x[k]][tomato_y[k]] in tomato_anim:
-            tomato_fl[k] = 0
+        if time_now - tomato_fl[k] > 0.2:
+            tomato_fl[k] = time_now
             mas_flowers[tomato_x[k]][tomato_y[k]] = tomato_anim[
                 1 - tomato_anim.index(mas_flowers[tomato_x[k]][tomato_y[k]])]
     for k in range(len(sunfl_fl)):
-        if sunfl_fl[k] < 15:
-            sunfl_fl[k] += 1
-        elif sunfl_fl[k] == 15 and mas_flowers[sunfl_x[k]][sunfl_y[k]] in sunfl_anim:
-            sunfl_fl[k] = 0
+        if time_now - sunfl_fl[k] > 0.2:
+            sunfl_fl[k] = time_now
             mas_flowers[sunfl_x[k]][sunfl_y[k]] = sunfl_anim[
                 1 - sunfl_anim.index(mas_flowers[sunfl_x[k]][sunfl_y[k]])]
     for k in range(len(pee_fl)):
-        if pee_fl[k] < 5:
-            pee_fl[k] += 1
-        elif pee_fl[k] == 5 and mas_flowers[pee_x[k]][pee_y[k]] in pee_anim:
-            pee_fl[k] = 0
+        if time_now - pee_fl[k] > 0.2:
+            pee_fl[k] = time_now
             mas_flowers[pee_x[k]][pee_y[k]] = pee_anim[
                 1 - pee_anim.index(mas_flowers[pee_x[k]][pee_y[k]])]
     for k in range(len(dpee_fl)):
-        if dpee_fl[k] < 9:
-            dpee_fl[k] += 1
-        elif dpee_fl[k] == 9 and mas_flowers[dpee_x[k]][dpee_y[k]] in dpee_anim:
-            dpee_fl[k] = 0
+        if time_now - dpee_fl[k] > 0.2:
+            dpee_fl[k] = time_now
             mas_flowers[dpee_x[k]][dpee_y[k]] = dpee_anim[
                 1 - dpee_anim.index(mas_flowers[dpee_x[k]][dpee_y[k]])]
     for i in range(9):
@@ -447,7 +439,6 @@ def draw_zombies():
         zombie_wave_fl += 750
     kolvo_zombie = zombie_wave_fl // 750 + 1
     zombie_wave_fl += 1
-    print(len(zombies_x))
     if fl == "play":
         while len(zombies_x) < zombie_waves[kolvo_zombie]:
             zombies_x.append(1700)
@@ -552,12 +543,16 @@ def new_double_pee_shots():
 
 
 def cherry_bomb():
-    global cherry_bomb_fl, cherry_x, cherry_y
-    if cherry_bomb_fl == 49:
+    global cherry_bomb_fl, cherry_x, cherry_y, Pow_cherry_fl
+    time_now = time.time()
+    if time_now - cherry_bomb_fl >= 2:
+        Pow_cherry_fl = time_now
+        cherry_x = -1000
+        cherry_y = -1000
         for x in range(9):
             for y in range(5):
                 if mas_flowers[x][y] == cherry:
-                    mas_flowers[x][y] = nots
+                    mas_flowers[x][y] = Pow_cherry
                     for k in range(len(zombies_x)):
                         if abs(int(zombies_x[k] // 155 - x)) <= 1 and abs(int(zombies_y[k] // 155 - y)) <= 1:
                             zombie_hp[k] = 0
@@ -565,19 +560,13 @@ def cherry_bomb():
                                 and abs(int(zombies_y[k] // 155 - y)) <= 1:
                             zombie_hp[k] = 0
                     break
-    if 100 >= cherry_bomb_fl >= 50:
-        screen.blit(Pow_cherry, (cherry_x + 50, cherry_y + 170))
-    if cherry_bomb_fl < 101:
-        cherry_bomb_fl += 2
-    else:
-        cherry_bomb_fl = 100
-        cherry_x = -1000
-        cherry_y = -1000
+                if mas_flowers[x][y] == Pow_cherry:
+                    mas_flowers[x][y] = nots
 
 
 def reload():
     global reload_nut, reload_double_pee, reload_pee, reload_cherry, reload_tomato, reload_sunflower, reload_thorns
-    global last_reload_nut, last_reload_double_pee, last_reload_pee, last_reload_cherry,\
+    global last_reload_nut, last_reload_double_pee, last_reload_pee, last_reload_cherry, \
         last_reload_tomato, last_reload_sunflower, last_reload_thorns
     i = 0.1
     if reload_nut > 0 and now - last_reload_nut >= 1000:
@@ -689,7 +678,8 @@ if __name__ == '__main__':
     pee_shot_x = []
     pee_shot_y = []
     cherry = pygame.image.load("cherry.png")
-    cherry_bomb_fl = 100
+    cherry_bomb_fl = time.time()
+    Pow_cherry_fl = 100000000
     cherry_x = -1000
     cherry_y = -1000
     thorns = thorns_1 = pygame.image.load("thorns_skin_1.png")
