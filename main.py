@@ -334,12 +334,13 @@ def draw_reload():
 
 
 def draw_sort_zombies(i):
-    global zombie_anim_fl, zombies_anim, zombies_x, zombies_y, zombie_eat_fl
+    global zombie_anim_fl, zombies_anim, zombies_x, zombies_y, zombie_eat_fl, last_run
     global mas_flowers, zombie_hp
     global pee_coult, pee_y, pee_x, pee_anim, last_pee_coult
     global dpee_coult, dpee_y, dpee_x, dpee_anim, last_dpee_coult
     global pee_shot_coult, pee_shot_y, pee_shot_x, pee_shot_anim
     global kolvo_zombie, zombie_waves, zombie_wave_fl
+    now_time = time.time()
     if i >= len(zombie_hp):
         return 0
     if zombie_hp[i] <= 0:
@@ -349,10 +350,21 @@ def draw_sort_zombies(i):
         del zombie_anim_fl[i]
         del zombie_hp[i]
         del zombies_anim[i]
-    if i >= len(zombie_eat_fl):
+        del last_run[i]
+    if i >= len(zombie_eat_fl) or i >= len(last_run):
         return 0
     if zombie_eat_fl[i] == 0:
-        zombies_x[i] -= 1.4
+        if len(zombie_anim_fl) <= i:
+            return 0
+        elif now_time - zombie_anim_fl[i] > 0.3:
+            zombie_anim_fl[i] = now_time
+            zombies_anim[i] += 1
+            zombies_anim[i] %= 3
+            if zombies_anim[i] == 0:
+                zombies_anim[i] += 1
+    if zombie_eat_fl[i] == 0 and now_time - last_run[i] >= 0.1:
+        zombies_x[i] -= 2
+        last_run[i] = now_time
         screen.blit(anim_number[zombies_anim[i]], (zombies_x[i], zombies_y[i]))
         x1 = zombies_x[i] // 150
         y1 = (zombies_y[i]) // 150
@@ -371,15 +383,7 @@ def draw_sort_zombies(i):
                         for i in range(len(tomato_x)):
                             if tomato_x[i] == x and tomato_y[i] == y:
                                 mas_flowers[x][y] = POW
-        if len(zombie_anim_fl) <= i:
-            return 0
-        if zombie_anim_fl[i] < 6:
-            zombie_anim_fl[i] += 1
-        elif zombie_anim_fl[i] >= 6:
-            zombie_anim_fl[i] = 0
-            zombies_anim[i] += 1
-            zombies_anim[i] %= 3
-    else:
+    elif now_time - last_run[i] >= 0.1:
         x1 = int(zombies_x[i] // 150)
         y1 = int(zombies_y[i] // 150)
         if mas_flowers[x1][y1] == nots:
@@ -388,11 +392,9 @@ def draw_sort_zombies(i):
         dop_trash = zombies_anim[i]
         if dop_trash == 1 or dop_trash == 2:
             zombies_anim[i] = 0
-            zombie_anim_fl[i] = 0
-        if zombie_anim_fl[i] < 20:
-            zombie_anim_fl[i] += 1
-        elif zombie_anim_fl[i] == 20:
-            zombie_anim_fl[i] = 0
+            zombie_anim_fl[i] = now_time
+        elif now_time - zombie_anim_fl[i] > 0.3:
+            zombie_anim_fl[i] = now_time
             zombies_anim[i] = 3 - zombies_anim[i]
             for y in range(5):
                 for x in range(9):
@@ -400,7 +402,7 @@ def draw_sort_zombies(i):
                         if x + 1 < 10:
                             if mas_flowers[x + 1][y] in thorns_anim:
                                 zombie_hp[i] -= 3
-                        hp_flowers[x][y] -= 10
+                        hp_flowers[x][y] -= 5
                         if hp_flowers[x][y] == 300:
                             mas_flowers[x][y] = nut_1
                         if hp_flowers[x][y] == 100:
@@ -426,11 +428,11 @@ def draw_sort_zombies(i):
                                     del dpee_fl[j2]
                                     del dpee_coult[j2]
                                     del last_dpee_coult[j2]
-        screen.blit(anim_number[zombies_anim[i]], (zombies_x[i], zombies_y[i]))
+    screen.blit(anim_number[zombies_anim[i]], (zombies_x[i], zombies_y[i]))
 
 
 def draw_zombies():
-    global zombie_anim_fl, zombies_anim, zombies_x, zombies_y, zombie_eat_fl
+    global zombie_anim_fl, zombies_anim, zombies_x, zombies_y, zombie_eat_fl, last_run
     global mas_flowers, zombie_hp
     global pee_coult, pee_y, pee_x, pee_anim, last_pee_coult
     global dpee_coult, dpee_y, dpee_x, dpee_anim, last_dpee_coult
@@ -443,12 +445,13 @@ def draw_zombies():
     zombie_wave_fl += 1
     if fl == "play":
         while len(zombies_x) < zombie_waves[kolvo_zombie]:
-            zombies_x.append(1700)
+            zombies_x.append(1800)
             zombies_y.append(zombies_y_const[random.randrange(5)])
             zombie_eat_fl.append(0)
-            zombie_anim_fl.append(0)
+            zombie_anim_fl.append(now_time)
             zombies_anim.append(0)
             zombie_hp.append(40)
+            last_run.append(now_time)
         for i in range(len(zombies_x)):
             if len(zombies_y) > i and (zombies_y[i] - 100) // 150 == 0:
                 draw_sort_zombies(i)
@@ -546,15 +549,15 @@ def new_double_pee_shots():
 
 
 def cherry_bomb():
-    global cherry_bomb_fl, cherry_x, cherry_y, Pow_cherry_fl
-    time_now = time.time()
+    global cherry_bomb_fl, cherry_x, cherry_y, Pow_cherry_fl, cherry_fl
+    time_now = now_time
     if time_now - cherry_bomb_fl >= 2:
-        Pow_cherry_fl = time_now
         cherry_x = -1000
         cherry_y = -1000
         for x in range(9):
             for y in range(5):
                 if mas_flowers[x][y] == cherry:
+                    cherry_fl = 0
                     mas_flowers[x][y] = Pow_cherry
                     for k in range(len(zombies_x)):
                         if abs(int(zombies_x[k] // 155 - x)) <= 1 and abs(int(zombies_y[k] // 155 - y)) <= 1:
@@ -563,8 +566,12 @@ def cherry_bomb():
                                 and abs(int(zombies_y[k] // 155 - y)) <= 1:
                             zombie_hp[k] = 0
                     break
-                if mas_flowers[x][y] == Pow_cherry:
+                if mas_flowers[x][y] == Pow_cherry and cherry_fl == 0:
+                    cherry_bomb_fl = time_now
+                    cherry_fl = 1
+                elif mas_flowers[x][y] == Pow_cherry:
                     mas_flowers[x][y] = nots
+
 
 
 def reload():
@@ -710,6 +717,7 @@ if __name__ == '__main__':
     open_windows()
     clock_time.tick(60)
     pygame.display.flip()
+    last_run = []
     time_fl = 0
     cost = {pee: 100, nut: 50, cherry: 150, tomato: 50, thorns: 50, double_pee: 200, sunflower: 50}
     sunflower_times = [[100000000000 for _ in range(5)] for _ in range(9)]
@@ -722,7 +730,9 @@ if __name__ == '__main__':
     flag_sun_2 = 0
     flag_sun_3 = 0
     mouse_x = -100
+    cherry_fl = 0
     mouse_y = -100
+    zombie_wave_fl = 760
     # ---------------------------------------------
     while running:
         for event in pygame.event.get():
@@ -751,8 +761,7 @@ if __name__ == '__main__':
             pygame.display.flip()
             clock.tick(60)
             pygame.display.set_caption("fps: " + str(clock.get_fps()))
-        pygame.time.Clock().tick()
-        now = pygame.time.get_ticks()
+        now_time = time.time()
         open_windows()
         if win_fl == 0:
             draw_plants()
