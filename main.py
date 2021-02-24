@@ -105,7 +105,7 @@ def button_check_play(coord):
                         and square_centres[i][j][1] + 50 >= y >= square_centres[i][j][1] and flag_sunflowers[i][j] == 1:
                     flag_sunflowers[i][j] = 0
                     sun_take.play()
-                    score += 50
+                    score += 25
 
     elif 155 >= y >= 0:
         if 155 >= x >= 1 and check_score(50) and int(reload_tomato + 0.999) == 0:
@@ -244,6 +244,7 @@ def button_check_play(coord):
                             del dpee_fl[i]
                             del dpee_coult[i]
                             del last_dpee_coult[i]
+                undig_sound.play()
                 mas_flowers[x][y] = nots
                 hp_flowers[x][y] = 0
             cursor = cursor_const
@@ -370,6 +371,7 @@ def draw_sort_zombies(i):
         del zombie_hp[i]
         del zombies_anim[i]
         del last_run[i]
+        die_sound.play()
     if i >= len(zombie_eat_fl) or i >= len(last_run):
         return 0
     if zombie_eat_fl[i] == 0:
@@ -527,7 +529,7 @@ def draw_pee_shots():
             if j >= len(zombies_x) or i >= len(pee_shot_x):
                 break
             if abs(zombies_x[j] - pee_shot_x[i]) <= 20 and zombies_y[j] // 150 + 1 == pee_shot_y[i] // 150:
-                pee_pop.play()
+                damage_sound.play()
                 zombie_hp[j] -= 4
                 del pee_shot_x[i]
                 del pee_shot_y[i]
@@ -552,6 +554,7 @@ def new_pee_shots():
                 pee_shot_y.append((pee_y[i] + 1) * 150 + 42)
                 last_pee_coult[i] = pee_coult[i]
                 pee_coult[i] = now_time
+                pee_pop.play()
             pee_coult[i] = now_time
 
 
@@ -567,13 +570,14 @@ def new_double_pee_shots():
                 pee_shot_y.append((dpee_y[i] + 1) * 150 + 42)
                 last_dpee_coult[i] = dpee_coult[i]
                 dpee_pps_fl = 1 - dpee_pps_fl
+                pee_pop.play()
             dpee_coult[i] = now_time
 
 
 def cherry_bomb():
     global cherry_bomb_fl, cherry_x, cherry_y, Pow_cherry_fl, cherry_fl, cherry_pow_2
     time_now = now_time
-    if time_now - cherry_bomb_fl >= 2:
+    if time_now - cherry_bomb_fl >= 1:
         cherry_x = -1000
         cherry_y = -1000
         for x in range(9):
@@ -785,6 +789,9 @@ if __name__ == '__main__':
     planting_sound = pygame.mixer.Sound('planting_sound.mp3')
     eating_sound = pygame.mixer.Sound('eating_sound.mp3')
     tomato_sound = pygame.mixer.Sound('tomato_sound.mp3')
+    undig_sound = pygame.mixer.Sound('undig.mp3')
+    damage_sound = pygame.mixer.Sound('damage.mp3')
+    die_sound = pygame.mixer.Sound('die.mp3')
     prev_time = 0
     flag_sun_1 = 0
     flag_sun_2 = 0
