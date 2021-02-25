@@ -886,7 +886,6 @@ if __name__ == '__main__':
             pygame.display.set_caption("Plants vs zombos")
         now_time = time.time()
         open_windows()
-        score = 5000
         if win_fl == 0 and lose_fl == 0 and fl != "pause":
             draw_plants()
             new_pee_shots()
