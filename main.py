@@ -480,11 +480,11 @@ def draw_zombies():
             zombie_anim_fl.append(now_time)
             zombies_anim.append(0)
             last_run.append(now_time)
-            if now_time - start_time >= 200:
+            if now_time - start_time >= 70:
                 k = random.randrange(2)
-            elif now_time - start_time >= 500:
+            elif now_time - start_time >= 130:
                 k = random.randrange(3)
-            elif now_time - start_time >= 800:
+            elif now_time - start_time >= 300:
                 k = random.randrange(4)
             else:
                 k = 0
