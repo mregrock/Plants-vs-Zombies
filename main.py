@@ -883,7 +883,7 @@ if __name__ == '__main__':
             mouse_x, mouse_y = pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
             pygame.display.flip()
             clock.tick(60)
-            pygame.display.set_caption("fps: " + str(clock.get_fps()))
+            pygame.display.set_caption("Plants vs zombos")
         now_time = time.time()
         open_windows()
         if win_fl == 0 and lose_fl == 0 and fl != "pause":
