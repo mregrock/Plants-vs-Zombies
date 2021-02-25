@@ -877,7 +877,7 @@ if __name__ == '__main__':
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
                 cursor = cursor_const
                 fl_cursor = "const"
-            if event.type == pygame.VIDEOEXPOSE and now_time != -1:
+            if event.type == pygame.VIDEOEXPOSE and now_time != -1 and fl != "pause":
                 old_fl = fl
                 fl = "pause"
             mouse_x, mouse_y = pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
