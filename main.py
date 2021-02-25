@@ -1,5 +1,4 @@
 import pygame
-import datetime
 import random
 import time
 
@@ -12,10 +11,16 @@ def open_windows():
         help_window()
     if fl == "play":
         play_window()
+    if fl == "pause":
+        pause_window()
 
 
 def draw_cursor(coord):
     screen.blit(cursor, coord)
+
+
+def pause_window():
+    screen.blit(pause_page, (0, 0))
 
 
 def first_window():
@@ -57,7 +62,7 @@ def button_check_start(coord):
         open_windows()
         screen.blit(cursor, coord)
         pygame.display.flip()
-        pygame.mixer.music.load('1.mp3')
+        pygame.mixer.music.load('second_music.mp3')
         pygame.mixer.music.play()
     if 1000 >= x >= 550 and 720 >= y >= 640:
         fl = "help"
@@ -188,7 +193,7 @@ def button_check_play(coord):
                     flag_start_reload[2] = True
                     last_reload_pee = now_time
                 if cursor == nut:
-                    hp_flowers[x][y] = 500
+                    hp_flowers[x][y] = 1000
                     reload_nut = 30
                     flag_reload[3] = False
                     flag_start_reload[3] = True
@@ -206,7 +211,7 @@ def button_check_play(coord):
                     cherry_bomb_fl = time_now
                     cherry_x = x * 150
                     cherry_y = y * 150
-                    hp_flowers[x][y] = 1000
+                    hp_flowers[x][y] = 100000
                     reload_cherry = 60
                     flag_reload[5] = False
                     flag_start_reload[5] = True
@@ -251,13 +256,6 @@ def button_check_play(coord):
             fl_cursor = "const"
 
 
-def checks():
-    for i in range(9):
-        for j in range(5):
-            if mas_flowers[i][j] == POW:
-                mas_flowers[i][j] = nots
-
-
 def draw_plants():
     global thorns_fl
     global mas_flowers
@@ -273,7 +271,7 @@ def draw_plants():
             mas_flowers[tomato_x[k]][tomato_y[k]] = tomato_anim[
                 1 - tomato_anim.index(mas_flowers[tomato_x[k]][tomato_y[k]])]
     for k in range(len(sunfl_fl)):
-        if time_now - sunfl_fl[k] > 0.2 and mas_flowers[sunfl_x[k]][sunfl_y[k]] in sunfl_anim:
+        if time_now - sunfl_fl[k] > 0.4 and mas_flowers[sunfl_x[k]][sunfl_y[k]] in sunfl_anim:
             sunfl_fl[k] = time_now
             mas_flowers[sunfl_x[k]][sunfl_y[k]] = sunfl_anim[
                 1 - sunfl_anim.index(mas_flowers[sunfl_x[k]][sunfl_y[k]])]
@@ -307,8 +305,6 @@ def sun_down_3():
 def plants_action():
     global sunflower_times
     global flag_sunflowers
-    flag_sunflower = 0
-    square_centre = (0, 0)
     for x in range(5):
         for y in range(9):
             if mas_flowers[x][y] in sunfl_anim:
@@ -358,8 +354,8 @@ def draw_sort_zombies(i):
     global mas_flowers, zombie_hp, eating_sound
     global pee_coult, pee_y, pee_x, pee_anim, last_pee_coult
     global dpee_coult, dpee_y, dpee_x, dpee_anim, last_dpee_coult
-    global pee_shot_coult, pee_shot_y, pee_shot_x, pee_shot_anim
-    global kolvo_zombie, zombie_waves, zombie_wave_fl
+    global pee_shot_coult, pee_shot_y, pee_shot_x, pee_shot_anim, lose_fl
+    global zombie_helmet
     now_time = time.time()
     if i >= len(zombie_hp):
         return 0
@@ -371,9 +367,12 @@ def draw_sort_zombies(i):
         del zombie_hp[i]
         del zombies_anim[i]
         del last_run[i]
+        del zombie_helmet[i]
         die_sound.play()
     if i >= len(zombie_eat_fl) or i >= len(last_run):
         return 0
+    if zombie_hp[i] <= 40:
+        zombie_helmet[i] = nots
     if zombie_eat_fl[i] == 0:
         if len(zombie_anim_fl) <= i:
             return 0
@@ -385,6 +384,9 @@ def draw_sort_zombies(i):
                 zombies_anim[i] += 1
     if zombie_eat_fl[i] == 0 and now_time - last_run[i] >= 0.1:
         zombies_x[i] -= 2
+        if zombies_x[i] < -100:
+            lose_fl = 1
+            return 0
         last_run[i] = now_time
         screen.blit(anim_number[zombies_anim[i]], (zombies_x[i], zombies_y[i]))
         x1 = zombies_x[i] // 150
@@ -397,7 +399,7 @@ def draw_sort_zombies(i):
                 if mas_flowers[x][y] in thorns_anim:
                     if x1 == x and y1 == y:
                         zombie_eat_fl[i] = 0
-                        zombie_hp[i] -= 0.15
+                        zombie_hp[i] -= 0.2
                 if mas_flowers[x][y] in tomato_anim:
                     if x1 == x and y1 == y:
                         zombie_hp[i] -= 1000
@@ -423,12 +425,12 @@ def draw_sort_zombies(i):
                     if x1 == x and y1 == y:
                         if x + 1 < 10:
                             if mas_flowers[x + 1][y] in thorns_anim:
-                                zombie_hp[i] -= 3
+                                zombie_hp[i] -= 0.7
                         eating_sound.play()
                         hp_flowers[x][y] -= 5
-                        if hp_flowers[x][y] == 300:
+                        if hp_flowers[x][y] == 600:
                             mas_flowers[x][y] = nut_1
-                        if hp_flowers[x][y] == 100:
+                        if hp_flowers[x][y] == 200:
                             mas_flowers[x][y] = nut_2
                         if hp_flowers[x][y] == 0:
                             mas_flowers[x][y] = nots
@@ -459,22 +461,38 @@ def draw_zombies():
     global mas_flowers, zombie_hp
     global pee_coult, pee_y, pee_x, pee_anim, last_pee_coult
     global dpee_coult, dpee_y, dpee_x, dpee_anim, last_dpee_coult
-    global pee_shot_coult, pee_shot_y, pee_shot_x, pee_shot_anim
-    global kolvo_zombie, zombie_waves, zombie_wave_fl
-    if zombie_waves[kolvo_zombie] == 10 or zombie_waves[kolvo_zombie] == 20 or zombie_waves[kolvo_zombie] == 30:
-        zombie_wave_fl += 750
-    kolvo_zombie = zombie_wave_fl // 750 + 1
-    print(zombie_waves[kolvo_zombie])
-    zombie_wave_fl += 1
+    global pee_shot_coult, pee_shot_y, pee_shot_x, pee_shot_anim, win_fl, zombie_helmet
+    global last_wave, fl_wave, start_time
+    if last_wave == 2:
+        last_wave = now_time
+        start_time = now_time
+    if now_time - last_wave >= 35 and waves[fl_wave] != -1:
+        last_wave = now_time
+        fl_wave += 1
+    if len(zombies_x) == 0 and waves[fl_wave] == -1:
+        win_fl = 1
+        return 0
     if fl == "play":
-        while len(zombies_x) < zombie_waves[kolvo_zombie]:
-            zombies_x.append(1800)
+        while len(zombies_x) < waves[fl_wave]:
+            zombies_x.append(random.randrange(1600, 1800))
             zombies_y.append(zombies_y_const[random.randrange(5)])
             zombie_eat_fl.append(0)
             zombie_anim_fl.append(now_time)
             zombies_anim.append(0)
-            zombie_hp.append(40)
             last_run.append(now_time)
+            if now_time - start_time >= 200:
+                k = random.randrange(2)
+            elif now_time - start_time >= 500:
+                k = random.randrange(3)
+            elif now_time - start_time >= 800:
+                k = random.randrange(4)
+            else:
+                k = 0
+            zombie_helmet.append(helmets[k])
+            zombie_hp.append(40 + helmets_hp[k])
+        if waves[fl_wave] % 10 == 0:
+            fl_wave += 1
+            last_wave = now_time
         for i in range(len(zombies_x)):
             if len(zombies_y) > i and (zombies_y[i] - 100) // 150 == 0:
                 draw_sort_zombies(i)
@@ -548,7 +566,7 @@ def new_pee_shots():
     for i in range(len(pee_x)):
         for j in range(len(zombies_x)):
             pee_coult[i] = now_time
-            if pee_coult[i] - last_pee_coult[i] >= 2 and zombies_y[j] // 150 == pee_y[i] \
+            if pee_coult[i] - last_pee_coult[i] >= 3 and zombies_y[j] // 150 == pee_y[i] \
                     and pee_x[i] <= zombies_x[j] // 155 and zombies_x[j] <= 1500:
                 pee_shot_x.append((pee_x[i] + 1) * 150 - 40)
                 pee_shot_y.append((pee_y[i] + 1) * 150 + 42)
@@ -584,14 +602,13 @@ def cherry_bomb():
             for y in range(5):
                 if mas_flowers[x][y] == cherry:
                     cherry_fl = 0
+                    cherry_pow_2.play()
                     mas_flowers[x][y] = Pow_cherry
                     for k in range(len(zombies_x)):
                         if abs(int(zombies_x[k] // 155 - x)) <= 1 and abs(int(zombies_y[k] // 155 - y)) <= 1:
-                            cherry_pow_2.play()
                             zombie_hp[k] = 0
                         if zombie_eat_fl[k] == 1 and zombies_x[k] // 155 == x - 2 \
                                 and abs(int(zombies_y[k] // 155 - y)) <= 1:
-                            cherry_pow_2.play()
                             zombie_hp[k] = 0
                     break
                 if mas_flowers[x][y] == Pow_cherry and cherry_fl == 0:
@@ -658,8 +675,23 @@ def reload():
             reload_sound.play()
 
 
-def win_text():
-    screen.blit(font.render("win", True, black), [750, 500])
+def win():
+    screen.blit(win_page, (0, 0))
+
+
+def lose():
+    screen.blit(not_win_page, (0, 0))
+
+
+def draw_helmets():
+    global zombie_helmet
+    for i in range(len(zombie_helmet)):
+        if zombie_helmet[i] == helmet:
+            screen.blit(zombie_helmet[i], (zombies_x[i] + 15, zombies_y[i] - 30))
+        if zombie_helmet[i] == conus:
+            screen.blit(zombie_helmet[i], (zombies_x[i] + 20, zombies_y[i] - 25))
+        if zombie_helmet[i] == bucket:
+            screen.blit(zombie_helmet[i], (zombies_x[i] + 25, zombies_y[i] - 15))
 
 
 if __name__ == '__main__':
@@ -689,14 +721,17 @@ if __name__ == '__main__':
     zombie_anim_2 = pygame.image.load("zombie_rightleg.png")
     zombie_anim_3 = pygame.image.load("zombie_leftleg.png")
     zombie_anim_4 = pygame.image.load("zombie_eat.png")
+    conus = pygame.image.load("conus.png")
+    bucket = pygame.image.load("bucket.png")
+    helmet = pygame.image.load("helmet.png")
     anim_number = [zombie_anim_1, zombie_anim_2, zombie_anim_3, zombie_anim_4]
     zombie_eat_fl = []
     zombie_anim_fl = []
     zombie_helmet = []
     zombie_hp = []
-    zombie_waves = [0, 1, 2, 4, 10, 5, 4, 7, 20, 11, 9, 13, 30, 0]
-    #zombie_wave_fl = -400
-    kolvo_zombie = 0
+    last_wave = 2
+    waves = [1, 2, 4, 6, 10, 6, 7, 8, 20, 9, 13, 12, 30, -1]
+    fl_wave = 0
     font_name = pygame.font.match_font('arial')
     font = pygame.font.Font(font_name, 50)
     background = pygame.image.load("background.png").convert()
@@ -706,6 +741,9 @@ if __name__ == '__main__':
     Hplay = pygame.image.load("button_help.png").convert()
     Eplay = pygame.image.load("button_exit.png").convert()
     H_back = pygame.image.load("back_help.png").convert()
+    win_page = pygame.image.load("win_page.png").convert()
+    pause_page = pygame.image.load("pause_page.png").convert()
+    not_win_page = pygame.image.load("not_win_page.png").convert()
     page = pygame.image.load("page.png").convert()
     tomato_1 = tomato = pygame.image.load("tomato_skin_1.png")
     tomato_2 = pygame.image.load("tomato_skin_2.png")
@@ -730,7 +768,7 @@ if __name__ == '__main__':
     pee_y = []
     pee_coult = []
     last_pee_coult = []
-    dpee_pps = [2, 0.3]
+    dpee_pps = [3, 0.5]
     dpee_pps_fl = 0
     double_pee = dpee_1 = pygame.image.load("double_pee_skin_1.png")
     dpee_2 = pygame.image.load("double_pee_skin_2.png")
@@ -761,6 +799,8 @@ if __name__ == '__main__':
     sun = pygame.transform.scale(sun, (50, 50))
     pos_mouse_x = -100
     pos_mouse_y = -100
+    helmets = [nots, conus, bucket, helmet]
+    helmets_hp = [0, 25, 40, 80]
     fl = "start"
     score = 50
     reload_sunflower = reload_tomato = reload_pee = reload_double_pee = reload_nut = reload_thorns = reload_cherry = 0
@@ -799,13 +839,15 @@ if __name__ == '__main__':
     mouse_x = -100
     cherry_fl = 0
     mouse_y = -100
-    zombie_wave_fl = 760
+    lose_fl = 0
+    start_time = 0
+    now_time = -1
     # ---------------------------------------------
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if fl == "start":
                     button_check_start(pygame.mouse.get_pos())
                 if fl == "help":
@@ -821,16 +863,30 @@ if __name__ == '__main__':
                     if volume < 1:
                         volume += 0.1
                     pygame.mixer.music.set_volume(volume)
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
+                elif event.key == pygame.K_1:
+                    pygame.mixer.music.load('first_music.mp3')
+                    pygame.mixer.music.play()
+                elif event.key == pygame.K_2:
+                    pygame.mixer.music.load('second_music.mp3')
+                    pygame.mixer.music.play()
+                elif event.key == pygame.K_ESCAPE and fl == "pause":
+                    fl = old_fl
+                elif event.key == pygame.K_ESCAPE:
+                    old_fl = fl
+                    fl = "pause"
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
                 cursor = cursor_const
                 fl_cursor = "const"
+            if event.type == pygame.VIDEOEXPOSE and now_time != -1:
+                old_fl = fl
+                fl = "pause"
             mouse_x, mouse_y = pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1]
             pygame.display.flip()
             clock.tick(60)
             pygame.display.set_caption("fps: " + str(clock.get_fps()))
         now_time = time.time()
         open_windows()
-        if win_fl == 0:
+        if win_fl == 0 and lose_fl == 0 and fl != "pause":
             draw_plants()
             new_pee_shots()
             new_double_pee_shots()
@@ -838,11 +894,15 @@ if __name__ == '__main__':
             draw_price()
             draw_reload()
             draw_zombies()
+            draw_helmets()
             cherry_bomb()
             draw_sun()
             reload()
-        else:
-            win_text()
+        elif win_fl == 1:
+            win()
+            cursor = cursor_const
+        elif lose_fl == 1:
+            lose()
             cursor = cursor_const
         draw_cursor((mouse_x, mouse_y))
         pygame.display.flip()
