@@ -474,18 +474,18 @@ def draw_zombies():
         return 0
     if fl == "play":
         while len(zombies_x) < waves[fl_wave]:
-            zombies_x.append(random.randrange(1600, 1800))
+            zombies_x.append(random.randrange(1700, 1900))
             zombies_y.append(zombies_y_const[random.randrange(5)])
             zombie_eat_fl.append(0)
             zombie_anim_fl.append(now_time)
             zombies_anim.append(0)
             last_run.append(now_time)
-            if now_time - start_time >= 70:
-                k = random.randrange(2)
-            elif now_time - start_time >= 130:
-                k = random.randrange(3)
-            elif now_time - start_time >= 300:
+            if now_time - start_time >= 300:
                 k = random.randrange(4)
+            elif now_time - start_time >= 200:
+                k = random.randrange(3)
+            elif now_time - start_time >= 100:
+                k = random.randrange(2)
             else:
                 k = 0
             zombie_helmet.append(helmets[k])
@@ -886,6 +886,7 @@ if __name__ == '__main__':
             pygame.display.set_caption("Plants vs zombos")
         now_time = time.time()
         open_windows()
+        score = 5000
         if win_fl == 0 and lose_fl == 0 and fl != "pause":
             draw_plants()
             new_pee_shots()
